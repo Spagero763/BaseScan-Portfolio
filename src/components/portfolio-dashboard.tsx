@@ -16,6 +16,7 @@ import {
   Shield,
   Fuel,
   LineChart as LineChartIcon,
+  Info,
 } from 'lucide-react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AiOptimizer } from './ai-optimizer';
@@ -497,7 +498,33 @@ export default function PortfolioDashboard() {
         </div>
       )}
       
-      {isConnected && (
+      {!isConnected ? (
+        <CardGlass>
+          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+                  <Info className="w-6 h-6 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Getting Started</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 space-y-4">
+            <p className="text-muted-foreground">Welcome to the Base Portfolio Tracker! To get started, connect your wallet.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="bg-white/5 rounded-lg p-4">
+                    <h3 className="font-bold text-lg mb-2">1. Connect Your Wallet</h3>
+                    <p className="text-sm text-blue-300/70">Click the "Connect Wallet" button in the top right to get started.</p>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4">
+                    <h3 className="font-bold text-lg mb-2">2. Deposit ETH</h3>
+                    <p className="text-sm text-blue-300/70">Once connected, you can deposit ETH into the vault to start earning yield.</p>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4">
+                    <h3 className="font-bold text-lg mb-2">3. Track Your Portfolio</h3>
+                    <p className="text-sm text-blue-300/70">Your balances and transaction history will appear here once you've made a deposit.</p>
+                </div>
+            </div>
+          </CardContent>
+        </CardGlass>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 md:mb-16">
           <CardGlass>
             <h2 className="text-2xl font-bold mb-4">Vault Actions</h2>
@@ -612,3 +639,4 @@ export default function PortfolioDashboard() {
     
 
     
+
