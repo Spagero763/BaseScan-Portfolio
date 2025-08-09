@@ -112,7 +112,7 @@ export default function PortfolioDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-center">
             <div className="bg-white/5 rounded-lg p-4">
                 <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Contract Address</p>
-                <p className="font-mono text-sm">0x488...2e23</p>
+                <p className="font-mono text-sm">0x2d7...e1a5</p>
             </div>
             <div className="bg-white/5 rounded-lg p-4">
                 <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Status</p>
@@ -132,7 +132,7 @@ export default function PortfolioDashboard() {
       <div className="flex flex-wrap gap-4 justify-center mt-8">
         <AiOptimizer />
         <Button asChild variant="secondary" className="bg-white/10 hover:bg-white/20 border border-white/20">
-          <a href="https://basescan.org/address/0x488472536E840D2A9BDeA044496647E9333a2e23" target="_blank" rel="noopener noreferrer">
+          <a href="https://basescan.org/address/0x2d71De053e0DEFbCE58D609E36568d874D07e1a5" target="_blank" rel="noopener noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" /> View on BaseScan
           </a>
         </Button>
