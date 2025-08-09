@@ -684,7 +684,7 @@ export default function PortfolioDashboard() {
                 </div>
                 <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
                     <h3 className="font-bold text-lg mb-2">3. Track Your Portfolio</h3>
-                    <p className="text-sm text-muted-foreground/70">Your balances and transaction history will appear here once you've made a deposit.</p>
+                    <p className="text-sm text-muted-foreground/70">Your balances and transaction history will appear here once you'veve made a deposit.</p>
                 </div>
             </div>
           </CardContent>
@@ -799,7 +799,7 @@ export default function PortfolioDashboard() {
       </CardGlass>
 
       <div className="flex flex-wrap gap-4 justify-center mt-8">
-        <AiOptimizer />
+        <AiOptimizer userBalanceInEth={userBalanceNumber} />
         <Button asChild variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
           <a href={`https://basescan.org/address/${contractAddress}`} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" /> View on BaseScan
@@ -836,4 +836,3 @@ export default function PortfolioDashboard() {
     
 
     
-

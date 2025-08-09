@@ -5,7 +5,7 @@ import { getPortfolioAnalysis } from '@/lib/actions';
 import { portfolioOptimizerSchema, type PortfolioOptimizerSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from './ui/button';
 import {
@@ -24,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
-export function AiOptimizer() {
+export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AiPortfolioOptimizerOutput | null>(null);
@@ -36,6 +36,18 @@ export function AiOptimizer() {
       currentHoldings: '',
     },
   });
+
+  useEffect(() => {
+    if (userBalanceInEth > 0 && open) {
+      form.setValue(
+        'currentHoldings',
+        `I have ${userBalanceInEth.toFixed(4)} ETH in the Simple Vault.`
+      );
+    } else if (open) {
+      form.setValue('currentHoldings', '');
+    }
+  }, [userBalanceInEth, open, form]);
+
 
   async function onSubmit(values: PortfolioOptimizerSchema) {
     setLoading(true);
