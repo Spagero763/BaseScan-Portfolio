@@ -316,6 +316,10 @@ export default function PortfolioDashboard() {
       toast({ variant: 'destructive', title: 'Invalid amount', description: 'Please enter a valid amount to deposit.' });
       return;
     }
+    if (parseFloat(depositAmount) < 0.01) {
+      toast({ variant: 'destructive', title: 'Deposit too small', description: 'Minimum deposit amount is 0.01 ETH.' });
+      return;
+    }
     deposit({
       address: contractAddress,
       abi: simpleVaultAbi,
@@ -639,4 +643,5 @@ export default function PortfolioDashboard() {
     
 
     
+
 
