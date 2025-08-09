@@ -64,7 +64,7 @@ export default function PortfolioDashboard() {
     address: contractAddress,
   });
 
-  const { data: hash: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract({
+  const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract({
      mutation: {
       onSuccess: () => {
         toast({ title: 'Deposit transaction sent!' });
@@ -78,7 +78,7 @@ export default function PortfolioDashboard() {
 
   const { isLoading: isDepositConfirming, isSuccess: isDepositConfirmed } = useWaitForTransactionReceipt({ hash: depositHash });
 
-  const { data: hash: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract({
+  const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract({
     mutation: {
       onSuccess: () => {
         toast({ title: 'Withdrawal transaction sent!' });
