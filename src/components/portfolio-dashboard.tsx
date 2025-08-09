@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Loader2,
   User,
+  Shield,
 } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { AiOptimizer } from './ai-optimizer';
@@ -76,6 +77,17 @@ export default function PortfolioDashboard() {
       enabled: isConnected,
     }
   });
+
+  const { data: contractOwnerAddress } = useReadContract({
+    abi: simpleVaultAbi,
+    address: contractAddress,
+    functionName: 'owner',
+    query: {
+        enabled: isConnected,
+    }
+  });
+
+  const isOwner = isConnected && address === contractOwnerAddress;
 
   const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract();
 
@@ -241,6 +253,23 @@ export default function PortfolioDashboard() {
           </CardContent>
         </CardGlass>
       </div>
+
+      {isOwner && (
+        <div className="mb-10 md:mb-16">
+            <CardGlass>
+                <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <Shield className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold">Admin Panel</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <p className="text-muted-foreground">Welcome, owner. Here you can manage the vault.</p>
+                    {/* Admin features will go here */}
+                </CardContent>
+            </CardGlass>
+        </div>
+      )}
       
       {isConnected && (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 md:mb-16">
@@ -344,3 +373,5 @@ export default function PortfolioDashboard() {
     </div>
   );
 }
+
+    
