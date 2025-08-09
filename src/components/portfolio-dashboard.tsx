@@ -36,6 +36,7 @@ import { format } from 'date-fns';
 import { ThemeToggle } from './theme-toggle';
 import { AnimatedNumber } from './animated-number';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { CardGlass } from './ui/card-glass';
 
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
@@ -471,14 +472,6 @@ export default function PortfolioDashboard() {
       }
     });
   };
-
-  const CardGlass = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div
-      className={`bg-card/80 dark:bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-2xl p-6 transition-all duration-300 hover:border-border-hover dark:hover:border-white/30 hover:-translate-y-1 ${className}`}
-    >
-      {children}
-    </div>
-  );
 
   return (
     <div className={`transition-opacity duration-500 p-4 sm:p-6 lg:p-8 ${isRefreshing ? 'opacity-60' : 'opacity-100'}`}>

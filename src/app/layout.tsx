@@ -49,7 +49,7 @@ export default function RootLayout({
           <SidebarProvider>
             <Sidebar>
               <SidebarHeader>
-                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-blue-200">BaseScan</h1>
+                 <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70">BaseScan</h1>
               </SidebarHeader>
               <SidebarContent>
                 <SidebarMenu>
@@ -63,15 +63,15 @@ export default function RootLayout({
               </SidebarContent>
               <SidebarFooter className="p-2 space-y-2">
                 <AiOptimizer userBalanceInEth={0} />
-                <Button asChild variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20 w-full justify-start">
+                <Button asChild variant="ghost" className="w-full justify-start">
                     <a href={`https://basescan.org/address/0x2d71De053e0DEFbCE58D609E36568d874D07e1a5`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink /> View on BaseScan
                     </a>
                 </Button>
-                <Button variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20 w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start">
                     <Share2 /> Share on Farcaster
                 </Button>
-                 <Button variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20 w-full justify-start">
+                 <Button variant="ghost" className="w-full justify-start">
                     <RefreshCw /> Refresh Data
                 </Button>
               </SidebarFooter>
