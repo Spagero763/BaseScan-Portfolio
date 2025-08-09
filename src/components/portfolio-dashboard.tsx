@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -13,15 +14,16 @@ import {
   Loader2,
   User,
   Shield,
+  Fuel,
 } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { AiOptimizer } from './ai-optimizer';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract, useEstimateGas, useFeeData } from 'wagmi';
 import { injected } from 'wagmi/connectors';
-import { parseEther, formatEther } from 'viem';
+import { parseEther, formatEther, formatGwei } from 'viem';
 import { simpleVaultAbi } from '@/lib/abi';
 import { Input } from './ui/input';
 import { TransactionHistory } from './transaction-history';
@@ -55,6 +57,38 @@ function ConnectWalletButton() {
       Connect Wallet
     </Button>
   );
+}
+
+function GasFeeEstimator({ amount, type, enabled }: { amount: string; type: 'deposit' | 'withdraw'; enabled: boolean }) {
+    const { data: feeData } = useFeeData();
+
+    const estimateQuery = useEstimateGas({
+        address: contractAddress,
+        abi: simpleVaultAbi,
+        functionName: type,
+        value: type === 'deposit' ? parseEther(amount || '0') : 0n,
+        args: type === 'withdraw' ? [parseEther(amount || '0')] : [],
+        query: {
+            enabled: enabled && !!amount && parseFloat(amount) > 0 && !!feeData?.gasPrice,
+        },
+    });
+
+    const estimatedFee = useMemo(() => {
+        if (estimateQuery.data && feeData?.gasPrice) {
+            const fee = estimateQuery.data * feeData.gasPrice;
+            return formatEther(fee);
+        }
+        return null;
+    }, [estimateQuery.data, feeData?.gasPrice]);
+    
+    if (!estimatedFee) return null;
+
+    return (
+        <div className="flex items-center text-xs text-muted-foreground mt-1">
+            <Fuel className="w-3 h-3 mr-1" />
+            Estimated Fee: ~{parseFloat(estimatedFee).toFixed(6)} ETH
+        </div>
+    );
 }
 
 export default function PortfolioDashboard() {
@@ -333,6 +367,7 @@ export default function PortfolioDashboard() {
                       {!isDepositLoading && !isDepositConfirming && 'Deposit'}
                     </Button>
                   </div>
+                   <GasFeeEstimator amount={depositAmount} type="deposit" enabled={isConnected} />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Withdraw ETH</h3>
@@ -351,6 +386,7 @@ export default function PortfolioDashboard() {
                       {!isWithdrawLoading && !isWithdrawConfirming && 'Withdraw'}
                     </Button>
                   </div>
+                  <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
                 </div>
             </div>
           </CardGlass>
@@ -417,6 +453,7 @@ export default function PortfolioDashboard() {
     </div>
   );
 }
+    
 
     
 
