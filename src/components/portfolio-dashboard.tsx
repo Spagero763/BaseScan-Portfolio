@@ -563,15 +563,24 @@ export default function PortfolioDashboard() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Withdraw ETH</h3>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 relative items-center">
                      <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 pr-12"
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       disabled={isWithdrawLoading || isWithdrawConfirming}
                     />
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="absolute right-[88px] h-7"
+                        onClick={() => userVaultBalanceData && setWithdrawAmount(formatEther(userVaultBalanceData as bigint))}
+                        disabled={isWithdrawLoading || isWithdrawConfirming || !userVaultBalanceData}
+                    >
+                        Max
+                    </Button>
                     <Button onClick={handleWithdraw} variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming}>
                       {isWithdrawLoading && <><Loader2 className="animate-spin" /> Sending...</>}
                       {isWithdrawConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
@@ -652,5 +661,6 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
