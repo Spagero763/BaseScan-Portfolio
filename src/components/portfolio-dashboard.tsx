@@ -39,6 +39,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
+const ETH_MOCK_PRICE = 2400;
+
 
 interface VaultEvent {
     type: 'Deposit' | 'Withdrawal';
@@ -128,7 +130,12 @@ export default function PortfolioDashboard() {
   const publicClient = usePublicClient();
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [userTxStats, setUserTxStats] = useState<UserTxStats | null>(null);
+  const [dailyChange, setDailyChange] = useState(0);
 
+  useEffect(() => {
+    // Simulate a dynamic daily change
+    setDailyChange((Math.random() - 0.5) * 15);
+  }, []);
 
   const fetchUserTxStats = useCallback(async () => {
     if (!publicClient || !address) return;
@@ -379,8 +386,8 @@ export default function PortfolioDashboard() {
   };
 
   const handleShare = () => {
-    const totalValue = (contractBalanceNumber * 2400).toFixed(2);
-    const userValue = (userBalanceNumber * 2400).toFixed(2);
+    const totalValue = (contractBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
+    const userValue = (userBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
     const shareText = `🏦 My Base Portfolio Update:\n\n💰 Total Vault Value: $${totalValue}\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (~$${userValue})\n\n📈 Check out this awesome portfolio tracker!`;
 
     navigator.clipboard.writeText(shareText).then(
@@ -484,8 +491,10 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Total Portfolio</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">$2,847.32</p>
-            <p className="text-sm text-green-500 dark:text-green-400 font-medium">+12.4% (24h)</p>
+            <p className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">${(contractBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</p>
+            <p className={`text-sm font-medium ${dailyChange >= 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                {dailyChange >= 0 ? '+' : ''}{dailyChange.toFixed(2)}% (24h)
+            </p>
           </CardContent>
         </CardGlass>
         
@@ -500,7 +509,7 @@ export default function PortfolioDashboard() {
              <div className="text-3xl md:text-4xl font-bold mb-1">
               {isConnected ? <><AnimatedNumber value={userBalanceNumber} /> ETH</> : '0.0000 ETH'}
             </div>
-            <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected ? (userBalanceNumber * 2400).toFixed(2) : '0.00'}</p>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected ? (userBalanceNumber * ETH_MOCK_PRICE).toFixed(2) : '0.00'}</p>
           </CardContent>
         </CardGlass>
 
@@ -515,7 +524,7 @@ export default function PortfolioDashboard() {
             <div className="text-3xl md:text-4xl font-bold mb-1">
               <AnimatedNumber value={contractBalanceNumber} /> ETH
             </div>
-            <p className="text-sm text-muted-foreground font-medium">≈ ${(contractBalanceNumber * 2400).toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${(contractBalanceNumber * ETH_MOCK_PRICE).toFixed(2)}</p>
           </CardContent>
         </CardGlass>
 
@@ -827,5 +836,4 @@ export default function PortfolioDashboard() {
     
 
     
-
 
