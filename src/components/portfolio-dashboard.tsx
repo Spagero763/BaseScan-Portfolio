@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,7 @@ import {
   Fuel,
   LineChart as LineChartIcon,
   Info,
+  PieChart as PieChartIcon,
 } from 'lucide-react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AiOptimizer } from './ai-optimizer';
@@ -29,7 +31,7 @@ import { simpleVaultAbi } from '@/lib/abi';
 import { Input } from './ui/input';
 import { TransactionHistory } from './transaction-history';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from 'recharts';
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { format } from 'date-fns';
 import { ThemeToggle } from './theme-toggle';
 import { AnimatedNumber } from './animated-number';
@@ -48,6 +50,11 @@ interface VaultEvent {
 interface ChartDataPoint {
     date: string;
     balance: number;
+}
+
+interface UserTxStats {
+  totalDeposits: number;
+  totalWithdrawals: number;
 }
 
 function ConnectWalletButton() {
@@ -120,6 +127,53 @@ export default function PortfolioDashboard() {
   const { address, isConnected } = useAccount();
   const publicClient = usePublicClient();
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [userTxStats, setUserTxStats] = useState<UserTxStats | null>(null);
+
+
+  const fetchUserTxStats = useCallback(async () => {
+    if (!publicClient || !address) return;
+
+    try {
+      const depositFilter = await publicClient.createEventFilter({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Deposit',
+          inputs: [{ type: 'address', name: 'user', indexed: true }, { type: 'uint256', name: 'amount' }],
+        },
+        args: { user: address },
+        fromBlock: 'earliest',
+      });
+      const withdrawalFilter = await publicClient.createEventFilter({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Withdrawal',
+          inputs: [{ type: 'address', name: 'user', indexed: true }, { type: 'uint256', name: 'amount' }],
+        },
+        args: { user: address },
+        fromBlock: 'earliest',
+      });
+
+      const [depositLogs, withdrawalLogs] = await Promise.all([
+        publicClient.getFilterLogs({ filter: depositFilter }),
+        publicClient.getFilterLogs({ filter: withdrawalFilter }),
+      ]);
+
+      const totalDeposits = depositLogs.reduce((sum, log) => sum + (log.args as any).amount, 0n);
+      const totalWithdrawals = withdrawalLogs.reduce((sum, log) => sum + (log.args as any).amount, 0n);
+
+      setUserTxStats({
+        totalDeposits: parseFloat(formatEther(totalDeposits)),
+        totalWithdrawals: parseFloat(formatEther(totalWithdrawals)),
+      });
+
+    } catch (error) {
+      console.error("Failed to fetch user transaction stats:", error);
+      setUserTxStats(null);
+    }
+  }, [publicClient, address]);
+
 
   const fetchVaultHistory = useCallback(async () => {
     if (!publicClient) return;
@@ -199,15 +253,37 @@ export default function PortfolioDashboard() {
 
   useEffect(() => {
     fetchVaultHistory();
-  }, [fetchVaultHistory]);
+    if (isConnected) {
+        fetchUserTxStats();
+    }
+  }, [fetchVaultHistory, fetchUserTxStats, isConnected]);
 
 
-  const chartConfig = {
+  const lineChartConfig = {
     balance: {
       label: 'Vault Balance (ETH)',
       color: 'hsl(var(--accent))',
     },
   } satisfies ChartConfig;
+
+  const pieChartConfig = {
+    deposits: {
+      label: 'Deposits',
+      color: 'hsl(var(--chart-1))',
+    },
+    withdrawals: {
+      label: 'Withdrawals',
+      color: 'hsl(var(--chart-2))',
+    },
+  } satisfies ChartConfig;
+
+  const pieChartData = useMemo(() => {
+    if (!userTxStats) return [];
+    return [
+      { name: 'deposits', value: userTxStats.totalDeposits, fill: 'var(--color-deposits)' },
+      { name: 'withdrawals', value: userTxStats.totalWithdrawals, fill: 'var(--color-withdrawals)' },
+    ];
+  }, [userTxStats]);
 
   const { data: contractBalanceData, refetch: refetchContractBalance } = useBalance({
     address: contractAddress,
@@ -260,10 +336,11 @@ export default function PortfolioDashboard() {
       refetchContractBalance();
       refetchUserVaultBalance();
       fetchVaultHistory();
+      fetchUserTxStats();
       if(isDepositConfirmed) setDepositAmount('');
       if(isWithdrawConfirmed) setWithdrawAmount('');
     }
-  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast, fetchVaultHistory]);
+  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast, fetchVaultHistory, fetchUserTxStats]);
 
   useEffect(() => {
     if (depositError) {
@@ -288,6 +365,7 @@ export default function PortfolioDashboard() {
     refetchContractBalance();
     refetchUserVaultBalance();
     fetchVaultHistory();
+    if(isConnected) fetchUserTxStats();
     toast({
       title: 'Refreshing portfolio data...',
     });
@@ -451,62 +529,107 @@ export default function PortfolioDashboard() {
           </CardContent>
         </CardGlass>
       </div>
-
-      <div className="mb-10 md:mb-16">
-        <CardGlass>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-10 md:mb-16">
+        <div className="lg:col-span-3">
+            <CardGlass className="h-full">
+                <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+                        <LineChartIcon className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 h-80">
+                  {chartData.length > 1 ? (
+                    <ChartContainer config={lineChartConfig} className="w-full h-full">
+                      <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
+                          <XAxis 
+                            dataKey="date" 
+                            tickLine={false} 
+                            axisLine={false} 
+                            tickMargin={8} 
+                            tickFormatter={(value) => value}
+                            style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickFormatter={(value) => `${value} ETH`}
+                            style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                          />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
+                          />
+                          <Line
+                            dataKey="balance"
+                            type="monotone"
+                            stroke="var(--color-balance)"
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                      </LineChart>
+                    </ChartContainer>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                      <div className="text-4xl text-muted-foreground/20">
+                        <LineChartIcon />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
+                        <p className="text-sm text-muted-foreground/70">Vault transactions will appear here once they are made.</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+            </CardGlass>
+        </div>
+        <div className="lg:col-span-2">
+           <CardGlass className="h-full">
             <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
-                    <LineChartIcon className="w-6 h-6 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-400 rounded-xl flex items-center justify-center shadow-lg">
+                <PieChartIcon className="w-6 h-6 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Your Activity</CardTitle>
             </CardHeader>
             <CardContent className="p-0 h-80">
-              {chartData.length > 1 ? (
-                <ChartContainer config={chartConfig} className="w-full h-full">
-                  <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
-                      <XAxis 
-                        dataKey="date" 
-                        tickLine={false} 
-                        axisLine={false} 
-                        tickMargin={8} 
-                        tickFormatter={(value) => value}
-                        style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        tickFormatter={(value) => `${value} ETH`}
-                        style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                      />
-                      <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
-                      />
-                      <Line
-                        dataKey="balance"
-                        type="monotone"
-                        stroke="var(--color-balance)"
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                  </LineChart>
+              {userTxStats && (userTxStats.totalDeposits > 0 || userTxStats.totalWithdrawals > 0) ? (
+                <ChartContainer config={pieChartConfig} className="w-full h-full">
+                  <PieChart>
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Pie
+                      data={pieChartData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                        <Cell key="cell-deposits" fill="var(--color-deposits)" />
+                        <Cell key="cell-withdrawals" fill="var(--color-withdrawals)" />
+                    </Pie>
+                  </PieChart>
                 </ChartContainer>
               ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-                  <div className="text-4xl text-muted-foreground/20">
-                    <LineChartIcon />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
-                    <p className="text-sm text-muted-foreground/70">Vault transactions will appear here once they are made.</p>
-                  </div>
-                </div>
+                 <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                      <div className="text-4xl text-muted-foreground/20">
+                        <PieChartIcon />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-bold text-lg text-muted-foreground">No Activity Yet</h3>
+                        <p className="text-sm text-muted-foreground/70">Your deposits and withdrawals will appear here.</p>
+                      </div>
+                    </div>
               )}
             </CardContent>
-        </CardGlass>
+          </CardGlass>
+        </div>
       </div>
+
 
       {isOwner && (
         <div className="mb-10 md:mb-16">
