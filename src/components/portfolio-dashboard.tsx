@@ -393,7 +393,7 @@ export default function PortfolioDashboard() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
         <CardGlass className="relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
@@ -694,5 +694,7 @@ export default function PortfolioDashboard() {
 
     
 
+
+    
 
     
