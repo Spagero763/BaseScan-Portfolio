@@ -89,13 +89,13 @@ export default function PortfolioDashboard() {
 
   const isOwner = isConnected && address === contractOwnerAddress;
 
-  const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract();
+  const { data: depositHash, writeContract: deposit, isPending: isDepositLoading, error: depositError } = useWriteContract();
 
     const { isLoading: isDepositConfirming, isSuccess: isDepositConfirmed } = useWaitForTransactionReceipt({ 
         hash: depositHash,
     });
 
-  const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract();
+  const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading, error: withdrawError } = useWriteContract();
 
   const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawConfirmed } = useWaitForTransactionReceipt({ 
       hash: withdrawHash,
@@ -103,13 +103,34 @@ export default function PortfolioDashboard() {
 
   useEffect(() => {
     if (isDepositConfirmed || isWithdrawConfirmed) {
-      toast({ title: 'Transaction Confirmed!', description: 'Your balances have been updated.' });
+      toast({ 
+        title: 'Transaction Confirmed!', 
+        description: 'Your balances have been updated.',
+        variant: 'default'
+      });
       refetchContractBalance();
       refetchUserVaultBalance();
       if(isDepositConfirmed) setDepositAmount('');
       if(isWithdrawConfirmed) setWithdrawAmount('');
     }
   }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast]);
+
+  useEffect(() => {
+    if (depositError) {
+      toast({
+        variant: 'destructive',
+        title: 'Deposit Error',
+        description: depositError.message.split('\n')[0],
+      });
+    }
+     if (withdrawError) {
+      toast({
+        variant: 'destructive',
+        title: 'Withdrawal Error',
+        description: withdrawError.message.split('\n')[0],
+      });
+    }
+  }, [depositError, withdrawError, toast]);
   
 
   const handleRefresh = () => {
@@ -148,7 +169,7 @@ export default function PortfolioDashboard() {
   };
 
   const handleDeposit = () => {
-    if (!depositAmount || isNaN(parseFloat(depositAmount))) {
+    if (!depositAmount || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
       toast({ variant: 'destructive', title: 'Invalid amount', description: 'Please enter a valid amount to deposit.' });
       return;
     }
@@ -157,11 +178,15 @@ export default function PortfolioDashboard() {
       abi: simpleVaultAbi,
       functionName: 'deposit',
       value: parseEther(depositAmount),
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Transaction Sent', description: 'Waiting for confirmation...' });
+      }
     });
   };
   
   const handleWithdraw = () => {
-    if (!withdrawAmount || isNaN(parseFloat(withdrawAmount))) {
+    if (!withdrawAmount || isNaN(parseFloat(withdrawAmount)) || parseFloat(withdrawAmount) <= 0) {
       toast({ variant: 'destructive', title: 'Invalid amount', description: 'Please enter a valid amount to withdraw.' });
       return;
     }
@@ -170,6 +195,10 @@ export default function PortfolioDashboard() {
       abi: simpleVaultAbi,
       functionName: 'withdraw',
       args: [parseEther(withdrawAmount)],
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Transaction Sent', description: 'Waiting for confirmation...' });
+      }
     });
   };
 
@@ -288,7 +317,9 @@ export default function PortfolioDashboard() {
                       disabled={isDepositLoading || isDepositConfirming}
                     />
                     <Button onClick={handleDeposit} disabled={isDepositLoading || isDepositConfirming}>
-                      {(isDepositLoading || isDepositConfirming) ? <Loader2 className="animate-spin" /> : 'Deposit'}
+                      {isDepositLoading && <><Loader2 className="animate-spin" /> Sending...</>}
+                      {isDepositConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                      {!isDepositLoading && !isDepositConfirming && 'Deposit'}
                     </Button>
                   </div>
                 </div>
@@ -304,7 +335,9 @@ export default function PortfolioDashboard() {
                       disabled={isWithdrawLoading || isWithdrawConfirming}
                     />
                     <Button onClick={handleWithdraw} variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming}>
-                      {(isWithdrawLoading || isWithdrawConfirming) ? <Loader2 className="animate-spin" /> : 'Withdraw'}
+                      {isWithdrawLoading && <><Loader2 className="animate-spin" /> Sending...</>}
+                      {isWithdrawConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                      {!isWithdrawLoading && !isWithdrawConfirming && 'Withdraw'}
                     </Button>
                   </div>
                 </div>
@@ -373,5 +406,7 @@ export default function PortfolioDashboard() {
     </div>
   );
 }
+
+    
 
     
