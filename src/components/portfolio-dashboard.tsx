@@ -481,22 +481,7 @@ export default function PortfolioDashboard() {
   );
 
   return (
-    <div className={`transition-opacity duration-500 ${isRefreshing ? 'opacity-60' : 'opacity-100'}`}>
-       <header className="flex justify-between items-center mb-10 md:mb-16">
-        <div className="text-left">
-           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-blue-200" style={{textShadow: '0 4px 20px rgba(0,0,0,0.1)'}}>
-            Base Portfolio Tracker
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-light">
-            Real-time DeFi portfolio analytics on Base network
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-            <ConnectWalletButton />
-            <ThemeToggle />
-        </div>
-      </header>
-
+    <div className={`transition-opacity duration-500 p-4 sm:p-6 lg:p-8 ${isRefreshing ? 'opacity-60' : 'opacity-100'}`}>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
         <CardGlass className="relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -813,26 +798,6 @@ export default function PortfolioDashboard() {
           </div>
         </div>
       </CardGlass>
-
-      <div className="flex flex-wrap gap-4 justify-center mt-8">
-        <AiOptimizer userBalanceInEth={userBalanceNumber} />
-        <Button asChild variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
-          <a href={`https://basescan.org/address/${contractAddress}`} target="_blank" rel="noopener noreferrer">
-            <ExternalLink className="mr-2 h-4 w-4" /> View on BaseScan
-          </a>
-        </Button>
-        <Button variant="secondary" onClick={handleShare} className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
-          <Share2 className="mr-2 h-4 w-4" /> Share on Farcaster
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20"
-        >
-          <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} /> Refresh Data
-        </Button>
-      </div>
 
       <footer className="text-center mt-16 pt-8 border-t border-border dark:border-white/10">
         <p className="text-sm text-muted-foreground/80">Built for Base Builder Rewards • Powered by Base Network</p>

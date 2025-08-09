@@ -22,12 +22,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from './ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useAccount } from 'wagmi';
+import { useReadContract } from 'wagmi';
+import { simpleVaultAbi } from '@/lib/abi';
+import { formatEther } from 'viem';
 
-export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) {
+export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEth: number }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AiPortfolioOptimizerOutput | null>(null);
   const { toast } = useToast();
+  const { address, isConnected } = useAccount();
+
+   const { data: userVaultBalanceData } = useReadContract({
+    abi: simpleVaultAbi,
+    address: '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5',
+    functionName: 'getBalance',
+    args: [address!],
+    query: {
+      enabled: isConnected && open,
+    }
+  });
 
   const form = useForm<PortfolioOptimizerSchema>({
     resolver: zodResolver(portfolioOptimizerSchema),
@@ -37,15 +52,16 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
   });
 
   useEffect(() => {
-    if (userBalanceInEth > 0 && open) {
-      form.setValue(
-        'currentHoldings',
-        `I have ${userBalanceInEth.toFixed(4)} ETH in the Simple Vault.`
-      );
+    if (userVaultBalanceData && open) {
+        const balance = parseFloat(formatEther(userVaultBalanceData as bigint));
+         form.setValue(
+            'currentHoldings',
+            `I have ${balance.toFixed(4)} ETH in the Simple Vault.`
+          );
     } else if (open) {
       form.setValue('currentHoldings', '');
     }
-  }, [userBalanceInEth, open, form]);
+  }, [userVaultBalanceData, open, form]);
 
 
   async function onSubmit(values: PortfolioOptimizerSchema) {
@@ -77,7 +93,7 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
+        <Button className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20 w-full justify-start">
           <Sparkles className="mr-2 h-4 w-4" />
           AI Portfolio Optimizer
         </Button>
