@@ -7,7 +7,7 @@ import { usePublicClient } from 'wagmi';
 import { useEffect, useState, useCallback } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, ScrollText } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
 interface Transaction {
@@ -130,7 +130,15 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                         </TableBody>
                     </Table>
                 ) : (
-                    <p className="text-muted-foreground text-center py-8">No transactions yet.</p>
+                    <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-8">
+                        <div className="text-4xl text-muted-foreground/20">
+                            <ScrollText />
+                        </div>
+                        <div className="space-y-1">
+                            <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
+                            <p className="text-sm text-muted-foreground/70">Your recent transactions will appear here.</p>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

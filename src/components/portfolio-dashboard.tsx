@@ -459,37 +459,49 @@ export default function PortfolioDashboard() {
                 <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
             </CardHeader>
             <CardContent className="p-0 h-80">
-              <ChartContainer config={chartConfig} className="w-full h-full">
-                <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
-                    <XAxis 
-                      dataKey="date" 
-                      tickLine={false} 
-                      axisLine={false} 
-                      tickMargin={8} 
-                      tickFormatter={(value) => value}
-                      style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                    />
-                    <YAxis
-                       tickLine={false}
-                       axisLine={false}
-                       tickMargin={8}
-                       tickFormatter={(value) => `${value} ETH`}
-                       style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                     />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
-                    />
-                    <Line
-                      dataKey="balance"
-                      type="monotone"
-                      stroke="var(--color-balance)"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                </LineChart>
-              </ChartContainer>
+              {chartData.length > 1 ? (
+                <ChartContainer config={chartConfig} className="w-full h-full">
+                  <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
+                      <XAxis 
+                        dataKey="date" 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickMargin={8} 
+                        tickFormatter={(value) => value}
+                        style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={(value) => `${value} ETH`}
+                        style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
+                      />
+                      <Line
+                        dataKey="balance"
+                        type="monotone"
+                        stroke="var(--color-balance)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                  </LineChart>
+                </ChartContainer>
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                  <div className="text-4xl text-muted-foreground/20">
+                    <LineChartIcon />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
+                    <p className="text-sm text-muted-foreground/70">Vault transactions will appear here once they are made.</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
         </CardGlass>
       </div>
@@ -661,6 +673,7 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
 
