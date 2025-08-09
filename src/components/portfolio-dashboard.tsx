@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +22,7 @@ import { AiOptimizer } from './ai-optimizer';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract, useEstimateGas, useFeeData, usePublicClient } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract, useEstimateGas, useFeeData, usePublicClient, useEnsName } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { parseEther, formatEther, formatGwei } from 'viem';
 import { simpleVaultAbi } from '@/lib/abi';
@@ -55,12 +54,13 @@ function ConnectWalletButton() {
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
+  const { data: ensName } = useEnsName({ address });
 
   if (isConnected) {
     return (
       <div className="flex items-center gap-4">
         <div className="text-sm">
-          Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+          Connected: {ensName || `${address?.slice(0, 6)}...${address?.slice(-4)}`}
         </div>
         <Button onClick={() => disconnect()} variant="secondary" className="bg-white/10 hover:bg-white/20 border border-white/20">
           Disconnect
@@ -691,5 +691,8 @@ export default function PortfolioDashboard() {
     
 
     
+
+    
+
 
     
