@@ -10,13 +10,14 @@ import {
   Wallet,
   ArrowRight,
   Loader2,
+  User,
 } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { AiOptimizer } from './ai-optimizer';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { parseEther, formatEther } from 'viem';
 import { simpleVaultAbi } from '@/lib/abi';
@@ -64,46 +65,43 @@ export default function PortfolioDashboard() {
     address: contractAddress,
   });
 
+  const { data: userVaultBalanceData, refetch: refetchUserVaultBalance } = useReadContract({
+    abi: simpleVaultAbi,
+    address: contractAddress,
+    functionName: 'getBalance',
+    args: [address!],
+    query: {
+      enabled: isConnected,
+    }
+  });
+
   const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract();
 
     const { isLoading: isDepositConfirming, isSuccess: isDepositConfirmed } = useWaitForTransactionReceipt({ 
         hash: depositHash,
-        onSuccess: () => {
-            toast({ title: 'Deposit transaction sent!' });
-            setDepositAmount('');
-            refetchContractBalance();
-        },
-        onError: (error: any) => {
-            toast({ variant: 'destructive', title: 'Deposit Error', description: error.shortMessage || error.message });
-        },
     });
 
   const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract();
 
   const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawConfirmed } = useWaitForTransactionReceipt({ 
       hash: withdrawHash,
-      onSuccess: () => {
-        toast({ title: 'Withdrawal transaction sent!' });
-        setWithdrawAmount('');
-        refetchContractBalance();
-      },
-      onError: (error: any) => {
-        toast({ variant: 'destructive', title: 'Withdrawal Error', description: error.shortMessage || error.message });
-      },
   });
 
-
-  useMemo(() => {
+  useEffect(() => {
     if (isDepositConfirmed || isWithdrawConfirmed) {
+      toast({ title: 'Transaction Confirmed!', description: 'Your balances have been updated.' });
       refetchContractBalance();
-      toast({ title: 'Transaction Confirmed!', description: 'Your balance has been updated.' });
+      refetchUserVaultBalance();
+      if(isDepositConfirmed) setDepositAmount('');
+      if(isWithdrawConfirmed) setWithdrawAmount('');
     }
-  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, toast]);
+  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast]);
   
 
   const handleRefresh = () => {
     setIsRefreshing(true);
     refetchContractBalance();
+    refetchUserVaultBalance();
     toast({
       title: 'Refreshing portfolio data...',
     });
@@ -183,7 +181,7 @@ export default function PortfolioDashboard() {
         <ConnectWalletButton />
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-10 md:mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
         <CardGlass className="relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
@@ -197,13 +195,28 @@ export default function PortfolioDashboard() {
             <p className="text-sm text-green-400 font-medium">+12.4% (24h)</p>
           </CardContent>
         </CardGlass>
+        
+        <CardGlass>
+          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
+             <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
+              <User className="w-6 h-6 text-white" />
+            </div>
+            <CardTitle className="text-xl font-semibold">Your Vault Balance</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+             <p className="text-4xl font-bold mb-1">
+              {isConnected && userVaultBalanceData !== undefined ? `${parseFloat(formatEther(userVaultBalanceData as bigint)).toFixed(4)} ETH` : '0.00 ETH'}
+            </p>
+            <p className="text-sm text-blue-300/80 font-medium">≈ ${isConnected && userVaultBalanceData !== undefined ? (parseFloat(formatEther(userVaultBalanceData as bigint)) * 2400).toFixed(2) : '0.00'}</p>
+          </CardContent>
+        </CardGlass>
 
         <CardGlass>
           <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
               <Landmark className="w-6 h-6 text-white" />
             </div>
-            <CardTitle className="text-xl font-semibold">Vault Balance</CardTitle>
+            <CardTitle className="text-xl font-semibold">Total Vault Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <p className="text-4xl font-bold mb-1">
