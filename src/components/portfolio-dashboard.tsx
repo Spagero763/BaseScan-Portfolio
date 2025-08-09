@@ -59,7 +59,7 @@ interface UserTxStats {
   totalWithdrawals: number;
 }
 
-function ConnectWalletButton() {
+export function ConnectWalletButton() {
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
