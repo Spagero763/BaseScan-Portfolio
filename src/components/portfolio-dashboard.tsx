@@ -32,6 +32,7 @@ import { TransactionHistory } from './transaction-history';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
+import { ThemeToggle } from './theme-toggle';
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
 
@@ -362,7 +363,7 @@ export default function PortfolioDashboard() {
 
   const CardGlass = ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div
-      className={`bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 transition-all duration-300 hover:border-white/30 hover:-translate-y-1 ${className}`}
+      className={`bg-card/80 dark:bg-white/10 backdrop-blur-xl border border-border dark:border-white/20 rounded-2xl p-6 transition-all duration-300 hover:border-border-hover dark:hover:border-white/30 hover:-translate-y-1 ${className}`}
     >
       {children}
     </div>
@@ -370,19 +371,22 @@ export default function PortfolioDashboard() {
 
   return (
     <div className={`transition-opacity duration-500 ${isRefreshing ? 'opacity-60' : 'opacity-100'}`}>
-      <header className="flex justify-between items-center mb-10 md:mb-16">
+       <header className="flex justify-between items-center mb-10 md:mb-16">
         <div className="text-left">
-           <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-white to-blue-200" style={{textShadow: '0 4px 20px rgba(255,255,255,0.2)'}}>
+           <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-blue-200" style={{textShadow: '0 4px 20px rgba(0,0,0,0.1)'}}>
             Base Portfolio Tracker
           </h1>
-          <p className="text-lg md:text-xl text-blue-200/90 font-light">
+          <p className="text-lg md:text-xl text-muted-foreground font-light">
             Real-time DeFi portfolio analytics on Base network
           </p>
         </div>
-        <ConnectWalletButton />
+        <div className="flex items-center gap-2">
+            <ConnectWalletButton />
+            <ThemeToggle />
+        </div>
       </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
         <CardGlass className="relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
@@ -392,8 +396,8 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Total Portfolio</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-white mb-1">$2,847.32</p>
-            <p className="text-sm text-green-400 font-medium">+12.4% (24h)</p>
+            <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">$2,847.32</p>
+            <p className="text-sm text-green-500 dark:text-green-400 font-medium">+12.4% (24h)</p>
           </CardContent>
         </CardGlass>
         
@@ -408,7 +412,7 @@ export default function PortfolioDashboard() {
              <p className="text-4xl font-bold mb-1">
               {isConnected && userVaultBalanceData !== undefined ? `${parseFloat(formatEther(userVaultBalanceData as bigint)).toFixed(4)} ETH` : '0.00 ETH'}
             </p>
-            <p className="text-sm text-blue-300/80 font-medium">≈ ${isConnected && userVaultBalanceData !== undefined ? (parseFloat(formatEther(userVaultBalanceData as bigint)) * 2400).toFixed(2) : '0.00'}</p>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected && userVaultBalanceData !== undefined ? (parseFloat(formatEther(userVaultBalanceData as bigint)) * 2400).toFixed(2) : '0.00'}</p>
           </CardContent>
         </CardGlass>
 
@@ -423,7 +427,7 @@ export default function PortfolioDashboard() {
             <p className="text-4xl font-bold mb-1">
               {contractBalanceData ? `${parseFloat(formatEther(contractBalanceData.value)).toFixed(4)} ETH` : '0.00 ETH'}
             </p>
-            <p className="text-sm text-blue-300/80 font-medium">≈ ${contractBalanceData ? (parseFloat(formatEther(contractBalanceData.value)) * 2400).toFixed(2) : '0.00'}</p>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${contractBalanceData ? (parseFloat(formatEther(contractBalanceData.value)) * 2400).toFixed(2) : '0.00'}</p>
           </CardContent>
         </CardGlass>
 
@@ -436,7 +440,7 @@ export default function PortfolioDashboard() {
           </CardHeader>
           <CardContent className="p-0">
             <p className="text-4xl font-bold text-accent animate-pulse mb-1">5.2%</p>
-            <p className="text-sm text-blue-300/80 font-medium">Annual APY</p>
+            <p className="text-sm text-muted-foreground font-medium">Annual APY</p>
           </CardContent>
         </CardGlass>
       </div>
@@ -452,7 +456,7 @@ export default function PortfolioDashboard() {
             <CardContent className="p-0 h-80">
               <ChartContainer config={chartConfig} className="w-full h-full">
                 <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
                     <XAxis 
                       dataKey="date" 
                       tickLine={false} 
@@ -513,17 +517,17 @@ export default function PortfolioDashboard() {
           <CardContent className="p-0 space-y-4">
             <p className="text-muted-foreground">Welcome to the Base Portfolio Tracker! To get started, connect your wallet.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <div className="bg-white/5 rounded-lg p-4">
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
                     <h3 className="font-bold text-lg mb-2">1. Connect Your Wallet</h3>
-                    <p className="text-sm text-blue-300/70">Click the "Connect Wallet" button in the top right to get started.</p>
+                    <p className="text-sm text-muted-foreground/70">Click the "Connect Wallet" button in the top right to get started.</p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4">
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
                     <h3 className="font-bold text-lg mb-2">2. Deposit ETH</h3>
-                    <p className="text-sm text-blue-300/70">Once connected, you can deposit ETH into the vault to start earning yield.</p>
+                    <p className="text-sm text-muted-foreground/70">Once connected, you can deposit ETH into the vault to start earning yield.</p>
                 </div>
-                <div className="bg-white/5 rounded-lg p-4">
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
                     <h3 className="font-bold text-lg mb-2">3. Track Your Portfolio</h3>
-                    <p className="text-sm text-blue-300/70">Your balances and transaction history will appear here once you've made a deposit.</p>
+                    <p className="text-sm text-muted-foreground/70">Your balances and transaction history will appear here once you've made a deposit.</p>
                 </div>
             </div>
           </CardContent>
@@ -539,7 +543,7 @@ export default function PortfolioDashboard() {
                     <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-slate-800/50 border-slate-700"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       disabled={isDepositLoading || isDepositConfirming}
@@ -558,7 +562,7 @@ export default function PortfolioDashboard() {
                      <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-slate-800/50 border-slate-700"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       disabled={isWithdrawLoading || isWithdrawConfirming}
@@ -591,20 +595,20 @@ export default function PortfolioDashboard() {
           </Badge>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-center">
-          <div className="bg-white/5 rounded-lg p-4">
-            <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Contract Address</p>
+          <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
+            <p className="text-xs uppercase text-muted-foreground/70 tracking-wider mb-1">Contract Address</p>
             <p className="font-mono text-sm break-all">{contractAddress}</p>
           </div>
-          <div className="bg-white/5 rounded-lg p-4">
-            <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Status</p>
+          <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
+            <p className="text-xs uppercase text-muted-foreground/70 tracking-wider mb-1">Status</p>
             <p className="font-semibold text-accent">Verified ✅</p>
           </div>
-          <div className="bg-white/5 rounded-lg p-4">
-            <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Total Locked</p>
+          <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
+            <p className="text-xs uppercase text-muted-foreground/70 tracking-wider mb-1">Total Locked</p>
             <p className="font-bold text-lg">{contractBalanceData ? `${parseFloat(formatEther(contractBalanceData.value)).toFixed(2)} ETH` : '...'}</p>
           </div>
-          <div className="bg-white/5 rounded-lg p-4">
-            <p className="text-xs uppercase text-blue-300/70 tracking-wider mb-1">Share Ratio</p>
+          <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
+            <p className="text-xs uppercase text-muted-foreground/70 tracking-wider mb-1">Share Ratio</p>
             <p className="font-bold text-lg">1.15</p>
           </div>
         </div>
@@ -612,26 +616,26 @@ export default function PortfolioDashboard() {
 
       <div className="flex flex-wrap gap-4 justify-center mt-8">
         <AiOptimizer />
-        <Button asChild variant="secondary" className="bg-white/10 hover:bg-white/20 border border-white/20">
+        <Button asChild variant="secondary" className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
           <a href={`https://basescan.org/address/${contractAddress}`} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" /> View on BaseScan
           </a>
         </Button>
-        <Button variant="secondary" onClick={handleShare} className="bg-white/10 hover:bg-white/20 border border-white/20">
+        <Button variant="secondary" onClick={handleShare} className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
           <Share2 className="mr-2 h-4 w-4" /> Share on Farcaster
         </Button>
         <Button
           variant="secondary"
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="bg-white/10 hover:bg-white/20 border border-white/20"
+          className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20"
         >
           <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} /> Refresh Data
         </Button>
       </div>
 
-      <footer className="text-center mt-16 pt-8 border-t border-white/10">
-        <p className="text-sm text-white/50">Built for Base Builder Rewards • Powered by Base Network</p>
+      <footer className="text-center mt-16 pt-8 border-t border-border dark:border-white/10">
+        <p className="text-sm text-muted-foreground/80">Built for Base Builder Rewards • Powered by Base Network</p>
       </footer>
     </div>
   );
@@ -643,7 +647,4 @@ export default function PortfolioDashboard() {
     
 
     
-
-
-
 
