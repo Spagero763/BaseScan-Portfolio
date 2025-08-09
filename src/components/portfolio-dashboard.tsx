@@ -190,11 +190,22 @@ export default function PortfolioDashboard() {
       toast({ variant: 'destructive', title: 'Invalid amount', description: 'Please enter a valid amount to withdraw.' });
       return;
     }
+    const requestedAmount = parseEther(withdrawAmount);
+
+    if (userVaultBalanceData !== undefined && requestedAmount > userVaultBalanceData) {
+        toast({
+            variant: 'destructive',
+            title: 'Insufficient Balance',
+            description: 'You cannot withdraw more than you have in the vault.',
+        });
+        return;
+    }
+
     withdraw({
       address: contractAddress,
       abi: simpleVaultAbi,
       functionName: 'withdraw',
-      args: [parseEther(withdrawAmount)],
+      args: [requestedAmount],
     }, {
       onSuccess: () => {
         toast({ title: 'Transaction Sent', description: 'Waiting for confirmation...' });
@@ -406,6 +417,8 @@ export default function PortfolioDashboard() {
     </div>
   );
 }
+
+    
 
     
 
