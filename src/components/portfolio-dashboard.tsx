@@ -306,6 +306,13 @@ export default function PortfolioDashboard() {
     }
   });
 
+  const { data: userWalletBalanceData } = useBalance({
+    address: address,
+    query: {
+      enabled: isConnected,
+    }
+  });
+
   const { data: contractOwnerAddress } = useReadContract({
     abi: simpleVaultAbi,
     address: contractAddress,
@@ -440,6 +447,15 @@ export default function PortfolioDashboard() {
             variant: 'destructive',
             title: 'Insufficient Balance',
             description: 'You cannot withdraw more than you have in the vault.',
+        });
+        return;
+    }
+
+    if (userVaultBalanceData !== undefined && requestedAmount === userVaultBalanceData && userWalletBalanceData?.value === 0n) {
+        toast({
+            variant: 'destructive',
+            title: 'Gas Fee Notice',
+            description: 'Please leave a small amount of ETH in your vault for transaction fees.',
         });
         return;
     }
