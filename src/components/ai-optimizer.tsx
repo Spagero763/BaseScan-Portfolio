@@ -22,7 +22,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from './ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) {
   const [open, setOpen] = useState(false);
@@ -78,12 +77,12 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-card/80 dark:bg-white/10 hover:bg-card/90 dark:hover:bg-white/20 border border-border dark:border-white/20">
           <Sparkles className="mr-2 h-4 w-4" />
           AI Portfolio Optimizer
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl bg-slate-900/80 backdrop-blur-sm border-slate-700">
+      <DialogContent className="sm:max-w-2xl bg-card/80 dark:bg-white/10 backdrop-blur-xl border border-border dark:border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="text-accent" />
@@ -96,16 +95,16 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
         
         {result ? (
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-            <Card className="bg-card/50">
-              <CardHeader><CardTitle>Recommendations</CardTitle></CardHeader>
+            <Card className="bg-background/50 dark:bg-white/5">
+              <CardHeader><CardTitle className="text-lg">Recommendations</CardTitle></CardHeader>
               <CardContent><p className="text-muted-foreground">{result.recommendations}</p></CardContent>
             </Card>
-            <Card className="bg-card/50">
-              <CardHeader><CardTitle>Risk Analysis</CardTitle></CardHeader>
+            <Card className="bg-background/50 dark:bg-white/5">
+              <CardHeader><CardTitle className="text-lg">Risk Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-muted-foreground">{result.riskAnalysis}</p></CardContent>
             </Card>
-             <Card className="bg-card/50">
-              <CardHeader><CardTitle>Return Analysis</CardTitle></CardHeader>
+             <Card className="bg-background/50 dark:bg-white/5">
+              <CardHeader><CardTitle className="text-lg">Return Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-muted-foreground">{result.returnAnalysis}</p></CardContent>
             </Card>
           </div>
@@ -121,7 +120,7 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
                     <FormControl>
                       <Textarea
                         placeholder="e.g., 50% ETH, 25% DEGEN, 25% in a liquidity pool on Aerodrome."
-                        className="resize-none bg-slate-800/50 border-slate-700"
+                        className="resize-none bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
                         rows={4}
                         {...field}
                       />
@@ -139,7 +138,7 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
                       <FormLabel>Risk Tolerance</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700"><SelectValue placeholder="Select your risk tolerance" /></SelectTrigger>
+                          <SelectTrigger className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"><SelectValue placeholder="Select your risk tolerance" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="low">Low</SelectItem>
@@ -159,7 +158,7 @@ export function AiOptimizer({ userBalanceInEth }: { userBalanceInEth: number }) 
                       <FormLabel>Investment Goals</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700"><SelectValue placeholder="Select your primary goal" /></SelectTrigger>
+                          <SelectTrigger className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"><SelectValue placeholder="Select your primary goal" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="growth">Growth</SelectItem>
