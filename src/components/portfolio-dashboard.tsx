@@ -544,37 +544,39 @@ export default function PortfolioDashboard() {
                 </CardHeader>
                 <CardContent className="p-0 h-80">
                   {chartData.length > 1 ? (
-                    <ChartContainer config={lineChartConfig} className="w-full h-full">
-                      <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-                          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
-                          <XAxis 
-                            dataKey="date" 
-                            tickLine={false} 
-                            axisLine={false} 
-                            tickMargin={8} 
-                            tickFormatter={(value) => value}
-                            style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                          />
-                          <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => `${value} ETH`}
-                            style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
-                          />
-                          <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
-                          />
-                          <Line
-                            dataKey="balance"
-                            type="monotone"
-                            stroke="var(--color-balance)"
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                      </LineChart>
-                    </ChartContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ChartContainer config={lineChartConfig} className="w-full h-full">
+                        <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
+                            <XAxis 
+                              dataKey="date" 
+                              tickLine={false} 
+                              axisLine={false} 
+                              tickMargin={8} 
+                              tickFormatter={(value) => value}
+                              style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                            />
+                            <YAxis
+                              tickLine={false}
+                              axisLine={false}
+                              tickMargin={8}
+                              tickFormatter={(value) => `${value} ETH`}
+                              style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                            />
+                            <ChartTooltip
+                              cursor={false}
+                              content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
+                            />
+                            <Line
+                              dataKey="balance"
+                              type="monotone"
+                              stroke="var(--color-balance)"
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                        </LineChart>
+                      </ChartContainer>
+                    </ResponsiveContainer>
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
                       <div className="text-4xl text-muted-foreground/20">
@@ -599,24 +601,26 @@ export default function PortfolioDashboard() {
             </CardHeader>
             <CardContent className="p-0 h-80">
               {userTxStats && (userTxStats.totalDeposits > 0 || userTxStats.totalWithdrawals > 0) ? (
-                <ChartContainer config={pieChartConfig} className="w-full h-full">
-                  <PieChart>
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent hideLabel />}
-                    />
-                    <Pie
-                      data={pieChartData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={60}
-                      strokeWidth={5}
-                    >
-                        <Cell key="cell-deposits" fill="var(--color-deposits)" />
-                        <Cell key="cell-withdrawals" fill="var(--color-withdrawals)" />
-                    </Pie>
-                  </PieChart>
-                </ChartContainer>
+                 <ResponsiveContainer width="100%" height="100%">
+                  <ChartContainer config={pieChartConfig} className="w-full h-full">
+                    <PieChart>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Pie
+                        data={pieChartData}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={60}
+                        strokeWidth={5}
+                      >
+                          <Cell key="cell-deposits" fill="var(--color-deposits)" />
+                          <Cell key="cell-withdrawals" fill="var(--color-withdrawals)" />
+                      </Pie>
+                    </PieChart>
+                  </ChartContainer>
+                </ResponsiveContainer>
               ) : (
                  <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
                       <div className="text-4xl text-muted-foreground/20">
@@ -632,7 +636,6 @@ export default function PortfolioDashboard() {
           </CardGlass>
         </div>
       </div>
-
 
       {isOwner && (
         <div className="mb-10 md:mb-16">
@@ -824,4 +827,5 @@ export default function PortfolioDashboard() {
     
 
     
+
 
