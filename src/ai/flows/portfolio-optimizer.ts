@@ -1,12 +1,5 @@
 // This file uses server-side code, and must have the `'use server'` directive.
 'use server';
-/**
- * @fileOverview A portfolio optimization AI agent.
- *
- * - aiPortfolioOptimizer - A function that provides portfolio optimization recommendations.
- * - AiPortfolioOptimizerInput - The input type for the aiPortfolioOptimizer function.
- * - AiPortfolioOptimizerOutput - The return type for the aiPortfolioOptimizer function.
- */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
