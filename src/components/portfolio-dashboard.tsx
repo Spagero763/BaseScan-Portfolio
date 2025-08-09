@@ -33,6 +33,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 import { ThemeToggle } from './theme-toggle';
+import { AnimatedNumber } from './animated-number';
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
 
@@ -228,6 +229,10 @@ export default function PortfolioDashboard() {
         enabled: isConnected,
     }
   });
+  
+  const userBalanceNumber = useMemo(() => userVaultBalanceData ? parseFloat(formatEther(userVaultBalanceData as bigint)) : 0, [userVaultBalanceData]);
+  const contractBalanceNumber = useMemo(() => contractBalanceData ? parseFloat(formatEther(contractBalanceData.value)) : 0, [contractBalanceData]);
+
 
   const isOwner = isConnected && address === contractOwnerAddress;
 
@@ -409,10 +414,10 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Your Vault Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-             <p className="text-4xl font-bold mb-1">
-              {isConnected && userVaultBalanceData !== undefined ? `${parseFloat(formatEther(userVaultBalanceData as bigint)).toFixed(4)} ETH` : '0.00 ETH'}
-            </p>
-            <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected && userVaultBalanceData !== undefined ? (parseFloat(formatEther(userVaultBalanceData as bigint)) * 2400).toFixed(2) : '0.00'}</p>
+             <div className="text-4xl font-bold mb-1">
+              {isConnected ? <><AnimatedNumber value={userBalanceNumber} /> ETH</> : '0.0000 ETH'}
+            </div>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected ? (userBalanceNumber * 2400).toFixed(2) : '0.00'}</p>
           </CardContent>
         </CardGlass>
 
@@ -424,10 +429,10 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Total Vault Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-4xl font-bold mb-1">
-              {contractBalanceData ? `${parseFloat(formatEther(contractBalanceData.value)).toFixed(4)} ETH` : '0.00 ETH'}
-            </p>
-            <p className="text-sm text-muted-foreground font-medium">≈ ${contractBalanceData ? (parseFloat(formatEther(contractBalanceData.value)) * 2400).toFixed(2) : '0.00'}</p>
+            <div className="text-4xl font-bold mb-1">
+              <AnimatedNumber value={contractBalanceNumber} /> ETH
+            </div>
+            <p className="text-sm text-muted-foreground font-medium">≈ ${(contractBalanceNumber * 2400).toFixed(2)}</p>
           </CardContent>
         </CardGlass>
 
@@ -647,4 +652,5 @@ export default function PortfolioDashboard() {
     
 
     
+
 
