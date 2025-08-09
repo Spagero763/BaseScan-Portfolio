@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -22,6 +23,7 @@ import { injected } from 'wagmi/connectors';
 import { parseEther, formatEther } from 'viem';
 import { simpleVaultAbi } from '@/lib/abi';
 import { Input } from './ui/input';
+import { TransactionHistory } from './transaction-history';
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
 
@@ -241,43 +243,52 @@ export default function PortfolioDashboard() {
       </div>
       
       {isConnected && (
-      <CardGlass className="mb-10 md:mb-16">
-        <h2 className="text-2xl font-bold mb-4">Vault Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Deposit ETH</h3>
-              <div className="flex gap-2">
-                <Input 
-                  type="text" 
-                  placeholder="Amount in ETH" 
-                  className="bg-slate-800/50 border-slate-700"
-                  value={depositAmount}
-                  onChange={(e) => setDepositAmount(e.target.value)}
-                  disabled={isDepositLoading || isDepositConfirming}
-                />
-                <Button onClick={handleDeposit} disabled={isDepositLoading || isDepositConfirming}>
-                  {(isDepositLoading || isDepositConfirming) ? <Loader2 className="animate-spin" /> : 'Deposit'}
-                </Button>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 md:mb-16">
+          <CardGlass>
+            <h2 className="text-2xl font-bold mb-4">Vault Actions</h2>
+            <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Deposit ETH</h3>
+                  <div className="flex gap-2">
+                    <Input 
+                      type="text" 
+                      placeholder="Amount in ETH" 
+                      className="bg-slate-800/50 border-slate-700"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      disabled={isDepositLoading || isDepositConfirming}
+                    />
+                    <Button onClick={handleDeposit} disabled={isDepositLoading || isDepositConfirming}>
+                      {(isDepositLoading || isDepositConfirming) ? <Loader2 className="animate-spin" /> : 'Deposit'}
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Withdraw ETH</h3>
+                  <div className="flex gap-2">
+                     <Input 
+                      type="text" 
+                      placeholder="Amount in ETH" 
+                      className="bg-slate-800/50 border-slate-700"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      disabled={isWithdrawLoading || isWithdrawConfirming}
+                    />
+                    <Button onClick={handleWithdraw} variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming}>
+                      {(isWithdrawLoading || isWithdrawConfirming) ? <Loader2 className="animate-spin" /> : 'Withdraw'}
+                    </Button>
+                  </div>
+                </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Withdraw ETH</h3>
-              <div className="flex gap-2">
-                 <Input 
-                  type="text" 
-                  placeholder="Amount in ETH" 
-                  className="bg-slate-800/50 border-slate-700"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                  disabled={isWithdrawLoading || isWithdrawConfirming}
-                />
-                <Button onClick={handleWithdraw} variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming}>
-                  {(isWithdrawLoading || isWithdrawConfirming) ? <Loader2 className="animate-spin" /> : 'Withdraw'}
-                </Button>
-              </div>
-            </div>
+          </CardGlass>
+          <CardGlass>
+            <TransactionHistory 
+              contractAddress={contractAddress}
+              userAddress={address}
+              triggerRefetch={isDepositConfirmed || isWithdrawConfirmed}
+            />
+          </CardGlass>
         </div>
-      </CardGlass>
       )}
 
       <CardGlass>
