@@ -15,20 +15,36 @@ import {
   User,
   Shield,
   Fuel,
+  LineChart as LineChartIcon,
 } from 'lucide-react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AiOptimizer } from './ai-optimizer';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract, useEstimateGas, useFeeData } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useWriteContract, useWaitForTransactionReceipt, useReadContract, useEstimateGas, useFeeData, usePublicClient } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { parseEther, formatEther, formatGwei } from 'viem';
 import { simpleVaultAbi } from '@/lib/abi';
 import { Input } from './ui/input';
 import { TransactionHistory } from './transaction-history';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from 'recharts';
+import { format } from 'date-fns';
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
+
+interface VaultEvent {
+    type: 'Deposit' | 'Withdrawal';
+    amount: bigint;
+    blockNumber: bigint;
+    timestamp: number;
+}
+
+interface ChartDataPoint {
+    date: string;
+    balance: number;
+}
 
 function ConnectWalletButton() {
   const { connect } = useConnect();
@@ -97,6 +113,96 @@ export default function PortfolioDashboard() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const { toast } = useToast();
   const { address, isConnected } = useAccount();
+  const publicClient = usePublicClient();
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+
+  const fetchVaultHistory = useCallback(async () => {
+    if (!publicClient) return;
+
+    try {
+      const depositFilter = await publicClient.createEventFilter({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Deposit',
+          inputs: [{ type: 'address', name: 'user', indexed: true }, { type: 'uint256', name: 'amount' }],
+        },
+        fromBlock: 'earliest',
+      });
+
+      const withdrawalFilter = await publicClient.createEventFilter({
+        address: contractAddress,
+        event: {
+          type: 'event',
+          name: 'Withdrawal',
+          inputs: [{ type: 'address', name: 'user', indexed: true }, { type: 'uint256', name: 'amount' }],
+        },
+        fromBlock: 'earliest',
+      });
+
+      const [depositLogs, withdrawalLogs] = await Promise.all([
+          publicClient.getFilterLogs({ filter: depositFilter }),
+          publicClient.getFilterLogs({ filter: withdrawalFilter }),
+      ]);
+      
+      const blocks = await Promise.all(
+        [...depositLogs, ...withdrawalLogs].map(log => publicClient.getBlock({ blockNumber: log.blockNumber }))
+      );
+      const blockMap = new Map(blocks.map(block => [block.number, block]));
+
+      const deposits: VaultEvent[] = depositLogs.map(log => ({
+        type: 'Deposit',
+        amount: (log.args as any).amount,
+        blockNumber: log.blockNumber,
+        timestamp: Number(blockMap.get(log.blockNumber)!.timestamp) * 1000
+      }));
+
+      const withdrawals: VaultEvent[] = withdrawalLogs.map(log => ({
+        type: 'Withdrawal',
+        amount: (log.args as any).amount,
+        blockNumber: log.blockNumber,
+        timestamp: Number(blockMap.get(log.blockNumber)!.timestamp) * 1000
+      }));
+
+      const combined = [...deposits, ...withdrawals].sort((a, b) => a.timestamp - b.timestamp);
+      
+      let currentBalance = 0n;
+      const data: ChartDataPoint[] = [];
+
+      if (combined.length > 0) {
+        data.push({ date: format(new Date(combined[0].timestamp - 86400000), 'MMM d'), balance: 0 });
+      }
+
+      for (const event of combined) {
+        if (event.type === 'Deposit') {
+          currentBalance += event.amount;
+        } else {
+          currentBalance -= event.amount;
+        }
+        data.push({
+          date: format(new Date(event.timestamp), 'MMM d'),
+          balance: parseFloat(formatEther(currentBalance)),
+        });
+      }
+
+      setChartData(data);
+
+    } catch (error) {
+      console.error("Failed to fetch vault history:", error);
+    }
+  }, [publicClient]);
+
+  useEffect(() => {
+    fetchVaultHistory();
+  }, [fetchVaultHistory]);
+
+
+  const chartConfig = {
+    balance: {
+      label: 'Vault Balance (ETH)',
+      color: 'hsl(var(--accent))',
+    },
+  } satisfies ChartConfig;
 
   const { data: contractBalanceData, refetch: refetchContractBalance } = useBalance({
     address: contractAddress,
@@ -144,10 +250,11 @@ export default function PortfolioDashboard() {
       });
       refetchContractBalance();
       refetchUserVaultBalance();
+      fetchVaultHistory();
       if(isDepositConfirmed) setDepositAmount('');
       if(isWithdrawConfirmed) setWithdrawAmount('');
     }
-  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast]);
+  }, [isDepositConfirmed, isWithdrawConfirmed, refetchContractBalance, refetchUserVaultBalance, toast, fetchVaultHistory]);
 
   useEffect(() => {
     if (depositError) {
@@ -171,6 +278,7 @@ export default function PortfolioDashboard() {
     setIsRefreshing(true);
     refetchContractBalance();
     refetchUserVaultBalance();
+    fetchVaultHistory();
     toast({
       title: 'Refreshing portfolio data...',
     });
@@ -328,6 +436,50 @@ export default function PortfolioDashboard() {
         </CardGlass>
       </div>
 
+      <div className="mb-10 md:mb-16">
+        <CardGlass>
+            <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+                    <LineChartIcon className="w-6 h-6 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 h-80">
+              <ChartContainer config={chartConfig} className="w-full h-full">
+                <LineChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis 
+                      dataKey="date" 
+                      tickLine={false} 
+                      axisLine={false} 
+                      tickMargin={8} 
+                      tickFormatter={(value) => value}
+                      style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                    />
+                    <YAxis
+                       tickLine={false}
+                       axisLine={false}
+                       tickMargin={8}
+                       tickFormatter={(value) => `${value} ETH`}
+                       style={{ fill: 'hsla(var(--muted-foreground))', fontSize: '12px' }}
+                     />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent indicator="line" labelClassName="text-background" className="bg-foreground" />}
+                    />
+                    <Line
+                      dataKey="balance"
+                      type="monotone"
+                      stroke="var(--color-balance)"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+        </CardGlass>
+      </div>
+
       {isOwner && (
         <div className="mb-10 md:mb-16">
             <CardGlass>
@@ -460,3 +612,4 @@ export default function PortfolioDashboard() {
     
 
     
+
