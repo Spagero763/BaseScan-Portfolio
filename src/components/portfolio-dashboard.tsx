@@ -34,6 +34,8 @@ import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContai
 import { format } from 'date-fns';
 import { ThemeToggle } from './theme-toggle';
 import { AnimatedNumber } from './animated-number';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+
 
 const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
 
@@ -593,11 +595,29 @@ export default function PortfolioDashboard() {
                     >
                         Max
                     </Button>
-                    <Button onClick={handleWithdraw} variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming}>
-                      {isWithdrawLoading && <><Loader2 className="animate-spin" /> Sending...</>}
-                      {isWithdrawConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
-                      {!isWithdrawLoading && !isWithdrawConfirming && 'Withdraw'}
-                    </Button>
+                     <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming || !withdrawAmount || parseFloat(withdrawAmount) <= 0}>
+                           {isWithdrawLoading && <><Loader2 className="animate-spin" /> Sending...</>}
+                          {isWithdrawConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                          {!isWithdrawLoading && !isWithdrawConfirming && 'Withdraw'}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Withdrawal</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to withdraw {withdrawAmount} ETH from the vault?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleWithdraw}>
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                   <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
                 </div>
@@ -673,8 +693,6 @@ export default function PortfolioDashboard() {
     
 
     
-
-
 
 
 
