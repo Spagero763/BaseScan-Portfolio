@@ -379,7 +379,10 @@ export default function PortfolioDashboard() {
   };
 
   const handleShare = () => {
-    const shareText = '🏦 My Base Portfolio Update:\n💰 Total: $2,847.32\n📈 Performance: +12.4% (24h)\n🔥 Vault APY: 5.2%';
+    const totalValue = (contractBalanceNumber * 2400).toFixed(2);
+    const userValue = (userBalanceNumber * 2400).toFixed(2);
+    const shareText = `🏦 My Base Portfolio Update:\n\n💰 Total Vault Value: $${totalValue}\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (~$${userValue})\n\n📈 Check out this awesome portfolio tracker!`;
+
     navigator.clipboard.writeText(shareText).then(
       () => {
         toast({
@@ -821,3 +824,4 @@ export default function PortfolioDashboard() {
     
 
     
+
