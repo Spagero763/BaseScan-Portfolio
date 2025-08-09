@@ -26,7 +26,7 @@ const contractAddress = '0x2d71De053e0DEFbCE58D609E36568d874D07e1a5';
 
 function ConnectWalletButton() {
   const { connect } = useConnect();
-  const { disconnect, status } = useDisconnect();
+  const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
 
   if (isConnected) {
@@ -64,33 +64,33 @@ export default function PortfolioDashboard() {
     address: contractAddress,
   });
 
-  const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract({
-     mutation: {
-      onSuccess: () => {
-        toast({ title: 'Deposit transaction sent!' });
-        setDepositAmount('');
-      },
-      onError: (error) => {
-        toast({ variant: 'destructive', title: 'Deposit Error', description: error.message });
-      },
-    },
-  });
+  const { data: depositHash, writeContract: deposit, isPending: isDepositLoading } = useWriteContract();
 
-  const { isLoading: isDepositConfirming, isSuccess: isDepositConfirmed } = useWaitForTransactionReceipt({ hash: depositHash });
+    const { isLoading: isDepositConfirming, isSuccess: isDepositConfirmed } = useWaitForTransactionReceipt({ 
+        hash: depositHash,
+        onSuccess: () => {
+            toast({ title: 'Deposit transaction sent!' });
+            setDepositAmount('');
+            refetchContractBalance();
+        },
+        onError: (error: any) => {
+            toast({ variant: 'destructive', title: 'Deposit Error', description: error.shortMessage || error.message });
+        },
+    });
 
-  const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract({
-    mutation: {
+  const { data: withdrawHash, writeContract: withdraw, isPending: isWithdrawLoading } = useWriteContract();
+
+  const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawConfirmed } = useWaitForTransactionReceipt({ 
+      hash: withdrawHash,
       onSuccess: () => {
         toast({ title: 'Withdrawal transaction sent!' });
         setWithdrawAmount('');
+        refetchContractBalance();
       },
-      onError: (error) => {
-        toast({ variant: 'destructive', title: 'Withdrawal Error', description: error.message });
+      onError: (error: any) => {
+        toast({ variant: 'destructive', title: 'Withdrawal Error', description: error.shortMessage || error.message });
       },
-    }
   });
-
-  const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawConfirmed } = useWaitForTransactionReceipt({ hash: withdrawHash });
 
 
   useMemo(() => {
@@ -315,17 +315,6 @@ export default function PortfolioDashboard() {
       </div>
 
       <footer className="text-center mt-16 pt-8 border-t border-white/10">
-        <div className="flex justify-center gap-6 mb-4">
-          <a href="#" className="text-blue-300/70 hover:text-accent transition-colors">
-            GitHub
-          </a>
-          <a href="#" className="text-blue-300/70 hover:text-accent transition-colors">
-            Base Network
-          </a>
-          <a href="#" className="text-blue-300/70 hover:text-accent transition-colors">
-            Documentation
-          </a>
-        </div>
         <p className="text-sm text-white/50">Built for Base Builder Rewards • Powered by Base Network</p>
       </footer>
     </div>
