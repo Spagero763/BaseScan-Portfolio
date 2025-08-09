@@ -378,10 +378,10 @@ export default function PortfolioDashboard() {
     <div className={`transition-opacity duration-500 ${isRefreshing ? 'opacity-60' : 'opacity-100'}`}>
        <header className="flex justify-between items-center mb-10 md:mb-16">
         <div className="text-left">
-           <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-blue-200" style={{textShadow: '0 4px 20px rgba(0,0,0,0.1)'}}>
+           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 dark:from-white dark:to-blue-200" style={{textShadow: '0 4px 20px rgba(0,0,0,0.1)'}}>
             Base Portfolio Tracker
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground font-light">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground font-light">
             Real-time DeFi portfolio analytics on Base network
           </p>
         </div>
@@ -401,7 +401,7 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Total Portfolio</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">$2,847.32</p>
+            <p className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">$2,847.32</p>
             <p className="text-sm text-green-500 dark:text-green-400 font-medium">+12.4% (24h)</p>
           </CardContent>
         </CardGlass>
@@ -414,7 +414,7 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Your Vault Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-             <div className="text-4xl font-bold mb-1">
+             <div className="text-3xl md:text-4xl font-bold mb-1">
               {isConnected ? <><AnimatedNumber value={userBalanceNumber} /> ETH</> : '0.0000 ETH'}
             </div>
             <p className="text-sm text-muted-foreground font-medium">≈ ${isConnected ? (userBalanceNumber * 2400).toFixed(2) : '0.00'}</p>
@@ -429,7 +429,7 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Total Vault Balance</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="text-4xl font-bold mb-1">
+            <div className="text-3xl md:text-4xl font-bold mb-1">
               <AnimatedNumber value={contractBalanceNumber} /> ETH
             </div>
             <p className="text-sm text-muted-foreground font-medium">≈ ${(contractBalanceNumber * 2400).toFixed(2)}</p>
@@ -444,7 +444,7 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Yield Earned</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-4xl font-bold text-accent animate-pulse mb-1">5.2%</p>
+            <p className="text-3xl md:text-4xl font-bold text-accent animate-pulse mb-1">5.2%</p>
             <p className="text-sm text-muted-foreground font-medium">Annual APY</p>
           </CardContent>
         </CardGlass>
@@ -560,7 +560,7 @@ export default function PortfolioDashboard() {
                     <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 text-base md:text-sm"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       disabled={isDepositLoading || isDepositConfirming}
@@ -579,7 +579,7 @@ export default function PortfolioDashboard() {
                      <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 pr-12"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 pr-12 text-base md:text-sm"
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       disabled={isWithdrawLoading || isWithdrawConfirming}
@@ -673,6 +673,7 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
 
