@@ -619,7 +619,7 @@ export default function PortfolioDashboard() {
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
-                  <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
+                  <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && !!withdrawAmount && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
                 </div>
             </div>
           </CardGlass>
@@ -693,7 +693,3 @@ export default function PortfolioDashboard() {
     
 
     
-
-
-
-
