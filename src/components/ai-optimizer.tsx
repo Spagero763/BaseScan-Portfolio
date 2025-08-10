@@ -71,7 +71,7 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
       if (walletBalance > 0) {
         holdings += `\nI also have ${walletBalance.toFixed(4)} ETH in my wallet.`;
       }
-      form.setValue('currentHoldings', holdings.trim() || '');
+      form.setValue('currentHoldings', holdings.trim() || 'Please connect your wallet to see your holdings.');
       
       if(userWalletBalanceData) {
         form.setValue('walletBalance', `${parseFloat(formatEther(userWalletBalanceData.value)).toFixed(4)} ETH`);
@@ -130,18 +130,18 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
         
         {result ? (
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-            <Card className="bg-transparent border-border/50">
+            <CardGlass>
               <CardHeader><CardTitle className="text-lg text-primary">Recommendations</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.recommendations}</p></CardContent>
-            </Card>
-            <Card className="bg-transparent border-border/50">
+            </CardGlass>
+            <CardGlass>
               <CardHeader><CardTitle className="text-lg text-primary">Risk Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.riskAnalysis}</p></CardContent>
-            </Card>
-             <Card className="bg-transparent border-border/50">
+            </CardGlass>
+             <CardGlass>
               <CardHeader><CardTitle className="text-lg text-primary">Return Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.returnAnalysis}</p></CardContent>
-            </Card>
+            </CardGlass>
           </div>
         ) : (
           <Form {...form}>
@@ -158,6 +158,7 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
                         className="resize-none bg-background/50 border-input"
                         rows={4}
                         {...field}
+                        readOnly
                       />
                     </FormControl>
                     <FormMessage />
