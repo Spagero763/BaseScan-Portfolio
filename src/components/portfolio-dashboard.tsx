@@ -129,10 +129,10 @@ export function ConnectWalletButton() {
   if (isConnected) {
     return (
       <div className="flex items-center gap-4">
-        <div className="text-sm">
-          Connected: {ensName || `${address?.slice(0, 6)}...${address?.slice(-4)}`}
+        <div className="text-sm font-medium text-foreground/80">
+          {ensName || `${address?.slice(0, 6)}...${address?.slice(-4)}`}
         </div>
-        <Button onClick={() => disconnect()} variant="secondary" className="bg-white/10 hover:bg-white/20 border border-white/20">
+        <Button onClick={() => disconnect()} variant="secondary" size="sm" className="bg-white/10 hover:bg-white/20 border border-white/20 h-8">
           Disconnect
         </Button>
       </div>
