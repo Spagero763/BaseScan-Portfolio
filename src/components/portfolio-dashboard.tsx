@@ -746,7 +746,7 @@ export default function PortfolioDashboard() {
                     <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="absolute right-[88px] h-7 px-2 hover:bg-white/10"
+                        className="absolute right-[88px] top-1/2 -translate-y-1/2 h-7 px-2 hover:bg-white/10"
                         onClick={() => userVaultBalanceData && setWithdrawAmount(formatEther(userVaultBalanceData as bigint))}
                         disabled={isWithdrawLoading || isWithdrawConfirming || !userVaultBalanceData}
                     >
@@ -835,5 +835,6 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
