@@ -22,8 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from './ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useAccount } from 'wagmi';
-import { useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { simpleVaultAbi } from '@/lib/abi';
 import { formatEther } from 'viem';
 import { CardGlass } from './ui/card-glass';
@@ -45,6 +44,13 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
     }
   });
 
+  const { data: userWalletBalanceData } = useBalance({
+    address: address,
+    query: {
+      enabled: isConnected && open,
+    }
+  });
+
   const form = useForm<PortfolioOptimizerSchema>({
     resolver: zodResolver(portfolioOptimizerSchema),
     defaultValues: {
@@ -53,16 +59,27 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
   });
 
   useEffect(() => {
-    if (userVaultBalanceData && open) {
-        const balance = parseFloat(formatEther(userVaultBalanceData as bigint));
-         form.setValue(
-            'currentHoldings',
-            `I have ${balance.toFixed(4)} ETH in the Simple Vault.`
-          );
-    } else if (open) {
-      form.setValue('currentHoldings', '');
+    if (open) {
+      const vaultBalance = userVaultBalanceData ? parseFloat(formatEther(userVaultBalanceData as bigint)) : 0;
+      const walletBalance = userWalletBalanceData ? parseFloat(formatEther(userWalletBalanceData.value)) : 0;
+      
+      let holdings = '';
+      if (vaultBalance > 0) {
+        holdings += `I have ${vaultBalance.toFixed(4)} ETH in the Simple Vault.`;
+      }
+      if (walletBalance > 0) {
+        holdings += `\nI also have ${walletBalance.toFixed(4)} ETH in my wallet.`;
+      }
+      form.setValue('currentHoldings', holdings.trim() || '');
+      
+      if(userWalletBalanceData) {
+        form.setValue('walletBalance', `${parseFloat(formatEther(userWalletBalanceData.value)).toFixed(4)} ETH`);
+      }
+
+    } else {
+      form.reset();
     }
-  }, [userVaultBalanceData, open, form]);
+  }, [userVaultBalanceData, userWalletBalanceData, open, form]);
 
 
   async function onSubmit(values: PortfolioOptimizerSchema) {

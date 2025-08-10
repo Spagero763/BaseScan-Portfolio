@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 export const portfolioOptimizerSchema = z.object({
-  currentHoldings: z.string().min(20, { message: 'Please provide a more detailed description of your holdings (at least 20 characters).' }),
+  currentHoldings: z.string().min(1, { message: 'Please connect your wallet to populate your holdings.' }),
   riskTolerance: z.enum(['low', 'medium', 'high'], { required_error: 'Please select your risk tolerance.' }),
   investmentGoals: z.enum(['growth', 'income', 'capital_preservation'], { required_error: 'Please select your investment goal.' }),
+  walletBalance: z.string().optional(),
 });
 
 export type PortfolioOptimizerSchema = z.infer<typeof portfolioOptimizerSchema>;
