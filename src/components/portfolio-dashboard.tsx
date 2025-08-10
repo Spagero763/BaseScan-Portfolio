@@ -430,23 +430,32 @@ export default function PortfolioDashboard() {
   }, [depositError, withdrawError, toast]);
   
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    refetchContractBalance();
-    refetchUserVaultBalance();
-    fetchVaultHistory();
-    if(isConnected) fetchUserTxStats();
     toast({
       title: 'Refreshing portfolio data...',
     });
-    setTimeout(() => {
-      setIsRefreshing(false);
-      toast({
-        title: 'Data refreshed!',
-        description: 'Your portfolio is up to date.',
-      });
-    }, 1500);
-  };
+    
+    const refetchPromises = [
+        refetchContractBalance(),
+        refetchUserVaultBalance(),
+        fetchVaultHistory(),
+    ];
+
+    if (isConnected) {
+        refetchPromises.push(fetchUserTxStats());
+    }
+
+    Promise.all(refetchPromises).then(() => {
+        setTimeout(() => {
+            setIsRefreshing(false);
+            toast({
+                title: 'Data refreshed!',
+                description: 'Your portfolio is up to date.',
+            });
+        }, 1000);
+    });
+  }, [refetchContractBalance, refetchUserVaultBalance, fetchVaultHistory, fetchUserTxStats, isConnected, toast]);
 
   const handleDeposit = () => {
     if (!depositAmount || isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
@@ -874,3 +883,6 @@ export default function PortfolioDashboard() {
 
 
 
+
+
+    
