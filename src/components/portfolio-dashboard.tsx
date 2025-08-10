@@ -699,11 +699,29 @@ export default function PortfolioDashboard() {
                       onChange={(e) => setDepositAmount(e.target.value)}
                       disabled={isDepositLoading || isDepositConfirming}
                     />
-                    <Button onClick={handleDeposit} disabled={isDepositLoading || isDepositConfirming}>
-                      {isDepositLoading && <><Loader2 className="animate-spin" /> Sending...</>}
-                      {isDepositConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
-                      {!isDepositLoading && !isDepositConfirming && 'Deposit'}
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button disabled={isDepositLoading || isDepositConfirming || !depositAmount || parseFloat(depositAmount) <= 0}>
+                          {isDepositLoading && <><Loader2 className="animate-spin" /> Sending...</>}
+                          {isDepositConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                          {!isDepositLoading && !isDepositConfirming && 'Deposit'}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Deposit</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to deposit {depositAmount} ETH into the vault?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDeposit}>
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                    <GasFeeEstimator amount={depositAmount} type="deposit" enabled={isConnected} />
                 </div>
