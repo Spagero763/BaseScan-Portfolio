@@ -82,7 +82,7 @@ export function ConnectWalletButton() {
   return (
     <Button
       onClick={() => connect({ connector: injected() })}
-      className="bg-accent hover:bg-accent/90"
+      className="bg-primary hover:bg-primary/90"
     >
       <Wallet className="mr-2 h-4 w-4" />
       Connect Wallet
