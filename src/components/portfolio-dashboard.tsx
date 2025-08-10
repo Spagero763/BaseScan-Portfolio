@@ -101,14 +101,14 @@ export function SidebarActions() {
         <>
             <Button asChild variant="ghost" className="w-full justify-start">
                 <a href={`https://basescan.org/address/0x2d71De053e0DEFbCE58D609E36568d874D07e1a5`} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink /> View on BaseScan
+                    <ExternalLink className="mr-2 h-4 w-4" /> View on BaseScan
                 </a>
             </Button>
             <Button variant="ghost" className="w-full justify-start" id="share-button" onClick={handleShare}>
-                <Share2 /> Share on Farcaster
+                <Share2 className="mr-2 h-4 w-4" /> Share on Farcaster
             </Button>
             <Button variant="ghost" className="w-full justify-start" onClick={() => window.location.reload()}>
-                <RefreshCw /> Refresh Data
+                <RefreshCw className="mr-2 h-4 w-4" /> Refresh Data
             </Button>
         </>
     )
@@ -738,7 +738,7 @@ export default function PortfolioDashboard() {
                     <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 text-base md:text-sm"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       disabled={isDepositLoading || isDepositConfirming}
@@ -746,8 +746,8 @@ export default function PortfolioDashboard() {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button disabled={isDepositLoading || isDepositConfirming || !depositAmount || parseFloat(depositAmount) <= 0}>
-                          {isDepositLoading && <><Loader2 className="animate-spin" /> Sending...</>}
-                          {isDepositConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                          {isDepositLoading && <><Loader2 className="animate-spin mr-2" /> Sending...</>}
+                          {isDepositConfirming && <><Loader2 className="animate-spin mr-2" /> Confirming...</>}
                           {!isDepositLoading && !isDepositConfirming && 'Deposit'}
                         </Button>
                       </AlertDialogTrigger>
@@ -775,7 +775,7 @@ export default function PortfolioDashboard() {
                      <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
-                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 pr-12 text-base md:text-sm"
+                      className="bg-background/50 dark:bg-slate-800/50 border-input dark:border-slate-700 pr-12"
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       disabled={isWithdrawLoading || isWithdrawConfirming}
@@ -792,8 +792,8 @@ export default function PortfolioDashboard() {
                      <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="secondary" disabled={isWithdrawLoading || isWithdrawConfirming || !withdrawAmount || parseFloat(withdrawAmount) <= 0}>
-                           {isWithdrawLoading && <><Loader2 className="animate-spin" /> Sending...</>}
-                          {isWithdrawConfirming && <><Loader2 className="animate-spin" /> Confirming...</>}
+                           {isWithdrawLoading && <><Loader2 className="animate-spin mr-2" /> Sending...</>}
+                          {isWithdrawConfirming && <><Loader2 className="animate-spin mr-2" /> Confirming...</>}
                           {!isWithdrawLoading && !isWithdrawConfirming && 'Withdraw'}
                         </Button>
                       </AlertDialogTrigger>
