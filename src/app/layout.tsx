@@ -3,10 +3,9 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { ConnectWalletButton } from "@/components/portfolio-dashboard";
+import { ConnectWalletButton, SidebarActions } from "@/components/portfolio-dashboard";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, Home, RefreshCw, Share2, Sparkles } from "lucide-react";
+import { ExternalLink, Home, Sparkles } from "lucide-react";
 import { AiOptimizer } from "@/components/ai-optimizer";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-domain.vercel.app';
@@ -63,17 +62,7 @@ export default function RootLayout({
               </SidebarContent>
               <SidebarFooter className="p-2 space-y-2">
                 <AiOptimizer userBalanceInEth={0} />
-                <Button asChild variant="ghost" className="w-full justify-start">
-                    <a href={`https://basescan.org/address/0x2d71De053e0DEFbCE58D609E36568d874D07e1a5`} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink /> View on BaseScan
-                    </a>
-                </Button>
-                <Button variant="ghost" className="w-full justify-start">
-                    <Share2 /> Share on Farcaster
-                </Button>
-                 <Button variant="ghost" className="w-full justify-start">
-                    <RefreshCw /> Refresh Data
-                </Button>
+                <SidebarActions />
               </SidebarFooter>
             </Sidebar>
             <SidebarInset>

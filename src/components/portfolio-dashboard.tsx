@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -58,6 +57,61 @@ interface ChartDataPoint {
 interface UserTxStats {
   totalDeposits: number;
   totalWithdrawals: number;
+}
+
+export function SidebarActions() {
+    const { toast } = useToast();
+    const { data: contractBalanceData } = useBalance({ address: contractAddress });
+    const { address, isConnected } = useAccount();
+    const { data: userVaultBalanceData } = useReadContract({
+        abi: simpleVaultAbi,
+        address: contractAddress,
+        functionName: 'getBalance',
+        args: [address!],
+        query: { enabled: isConnected },
+    });
+
+    const userBalanceNumber = useMemo(() => userVaultBalanceData ? parseFloat(formatEther(userVaultBalanceData as bigint)) : 0, [userVaultBalanceData]);
+    const contractBalanceNumber = useMemo(() => contractBalanceData ? parseFloat(formatEther(contractBalanceData.value)) : 0, [contractBalanceData]);
+
+
+    const handleShare = () => {
+        const totalValue = (contractBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
+        const userValue = (userBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
+        const shareText = `🏦 My Base Portfolio Update:\n\n💰 Total Vault Value: $${totalValue}\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (~$${userValue})\n\n📈 Check out this awesome portfolio tracker!`;
+
+        navigator.clipboard.writeText(shareText).then(
+        () => {
+            toast({
+            title: 'Copied to clipboard!',
+            description: 'You can now share your portfolio on Farcaster.',
+            });
+        },
+        () => {
+            toast({
+            variant: 'destructive',
+            title: 'Failed to copy',
+            description: 'Could not copy text to clipboard.',
+            });
+        }
+        );
+    };
+
+    return (
+        <>
+            <Button asChild variant="ghost" className="w-full justify-start">
+                <a href={`https://basescan.org/address/0x2d71De053e0DEFbCE58D609E36568d874D07e1a5`} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink /> View on BaseScan
+                </a>
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" id="share-button" onClick={handleShare}>
+                <Share2 /> Share on Farcaster
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" onClick={() => window.location.reload()}>
+                <RefreshCw /> Refresh Data
+            </Button>
+        </>
+    )
 }
 
 export function ConnectWalletButton() {
@@ -392,28 +446,6 @@ export default function PortfolioDashboard() {
         description: 'Your portfolio is up to date.',
       });
     }, 1500);
-  };
-
-  const handleShare = () => {
-    const totalValue = (contractBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
-    const userValue = (userBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
-    const shareText = `🏦 My Base Portfolio Update:\n\n💰 Total Vault Value: $${totalValue}\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (~$${userValue})\n\n📈 Check out this awesome portfolio tracker!`;
-
-    navigator.clipboard.writeText(shareText).then(
-      () => {
-        toast({
-          title: 'Copied to clipboard!',
-          description: 'You can now share your portfolio on Farcaster.',
-        });
-      },
-      () => {
-        toast({
-          variant: 'destructive',
-          title: 'Failed to copy',
-          description: 'Could not copy text to clipboard.',
-        });
-      }
-    );
   };
 
   const handleDeposit = () => {
@@ -835,6 +867,8 @@ export default function PortfolioDashboard() {
     
 
     
+
+
 
 
 
