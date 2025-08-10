@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -76,9 +75,16 @@ export function SidebarActions() {
 
 
     const handleShare = () => {
-        const totalValue = (contractBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
-        const userValue = (userBalanceNumber * ETH_MOCK_PRICE).toFixed(2);
-        const shareText = `🏦 My Base Portfolio Update:\n\n💰 Total Vault Value: $${totalValue}\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (~$${userValue})\n\n📈 Check out this awesome portfolio tracker!`;
+        const totalValue = (contractBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        const userValue = (userBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        
+        let shareText: string;
+
+        if (isConnected && userBalanceNumber > 0) {
+            shareText = `My vault on Base is thriving! 🏦\n\nMy Balance: ${userBalanceNumber.toFixed(4)} ETH (${userValue})\nTotal Value Locked: ${totalValue}\n\nBuilt with @Firebase on @base. #BaseBuilder`;
+        } else {
+            shareText = `Checking out this cool portfolio tracker for Base! 📈\n\nTotal Value Locked in the vault: ${totalValue}\n\nBuilt with @Firebase on @base. #BaseBuilder`;
+        }
 
         navigator.clipboard.writeText(shareText).then(
         () => {
