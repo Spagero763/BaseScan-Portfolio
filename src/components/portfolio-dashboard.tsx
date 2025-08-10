@@ -734,7 +734,7 @@ export default function PortfolioDashboard() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Withdraw ETH</h3>
-                  <div className="flex gap-2 relative items-center">
+                  <div className="flex gap-2 relative">
                      <Input 
                       type="text" 
                       placeholder="Amount in ETH" 
@@ -746,7 +746,7 @@ export default function PortfolioDashboard() {
                     <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="absolute right-[88px] h-7"
+                        className="absolute right-[88px] h-7 px-2 hover:bg-white/10"
                         onClick={() => userVaultBalanceData && setWithdrawAmount(formatEther(userVaultBalanceData as bigint))}
                         disabled={isWithdrawLoading || isWithdrawConfirming || !userVaultBalanceData}
                     >
@@ -835,4 +835,5 @@ export default function PortfolioDashboard() {
     
 
     
+
 
