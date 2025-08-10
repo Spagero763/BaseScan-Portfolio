@@ -115,7 +115,7 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                             {transactions.map((tx) => (
                                 <TableRow key={tx.hash}>
                                     <TableCell>
-                                        <Badge variant={tx.type === 'Deposit' ? 'default' : 'secondary'} className={tx.type === 'Deposit' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}>
+                                        <Badge variant={tx.type === 'Deposit' ? 'default' : 'secondary'} className={tx.type === 'Deposit' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'}>
                                             {tx.type}
                                         </Badge>
                                     </TableCell>
