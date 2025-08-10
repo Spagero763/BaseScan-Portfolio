@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, ScrollText } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { CardHeader, CardContent, CardTitle } from './ui/card';
 
 interface Transaction {
     hash: string;
@@ -94,53 +95,57 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
 
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4">Transaction History</h2>
-            <div className="max-h-60 overflow-y-auto pr-2">
-                {loading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
-                    </div>
-                ) : transactions.length > 0 ? (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Type</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
-                                <TableHead className="text-right">Tx</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {transactions.map((tx) => (
-                                <TableRow key={tx.hash}>
-                                    <TableCell>
-                                        <Badge variant={tx.type === 'Deposit' ? 'default' : 'secondary'} className={tx.type === 'Deposit' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'}>
-                                            {tx.type}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right font-mono">{parseFloat(tx.amount).toFixed(4)} ETH</TableCell>
-                                    <TableCell className="text-right">
-                                        <a href={`https://basescan.org/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="inline-block hover:text-accent">
-                                            <ExternalLink className="w-4 h-4" />
-                                        </a>
-                                    </TableCell>
+            <CardHeader>
+                <CardTitle>Transaction History</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="max-h-60 overflow-y-auto pr-2">
+                    {loading ? (
+                        <div className="space-y-2">
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                        </div>
+                    ) : transactions.length > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead className="text-right">Amount</TableHead>
+                                    <TableHead className="text-right">Tx</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                ) : (
-                    <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-8">
-                        <div className="text-4xl text-muted-foreground/20">
-                            <ScrollText />
+                            </TableHeader>
+                            <TableBody>
+                                {transactions.map((tx) => (
+                                    <TableRow key={tx.hash}>
+                                        <TableCell>
+                                            <Badge variant={tx.type === 'Deposit' ? 'default' : 'secondary'} className={tx.type === 'Deposit' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'}>
+                                                {tx.type}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right font-mono">{parseFloat(tx.amount).toFixed(4)} ETH</TableCell>
+                                        <TableCell className="text-right">
+                                            <a href={`https://basescan.org/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="inline-block hover:text-accent">
+                                                <ExternalLink className="w-4 h-4" />
+                                            </a>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-8">
+                            <div className="text-4xl text-muted-foreground/20">
+                                <ScrollText />
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
+                                <p className="text-sm text-muted-foreground/70">Your recent transactions will appear here.</p>
+                            </div>
                         </div>
-                        <div className="space-y-1">
-                            <h3 className="font-bold text-lg text-muted-foreground">No History Yet</h3>
-                            <p className="text-sm text-muted-foreground/70">Your recent transactions will appear here.</p>
-                        </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            </CardContent>
         </div>
     )
 }

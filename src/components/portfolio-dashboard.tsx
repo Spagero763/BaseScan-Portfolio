@@ -719,8 +719,10 @@ export default function PortfolioDashboard() {
       ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 md:mb-16">
           <CardGlass>
-            <h2 className="text-2xl font-bold mb-4">Vault Actions</h2>
-            <div className="space-y-6">
+            <CardHeader>
+                <CardTitle>Vault Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Deposit ETH</h3>
                   <div className="flex gap-2">
@@ -804,7 +806,7 @@ export default function PortfolioDashboard() {
                   </div>
                   <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && !!withdrawAmount && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
                 </div>
-            </div>
+            </CardContent>
           </CardGlass>
           <CardGlass>
             <TransactionHistory 
@@ -861,6 +863,7 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
 
