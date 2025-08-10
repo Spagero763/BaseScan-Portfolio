@@ -511,14 +511,14 @@ export default function PortfolioDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-16">
         <CardGlass className="relative overflow-hidden group">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-semibold">Total Portfolio</CardTitle>
+            <Wallet className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="p-0">
-            <p className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">${(contractBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</p>
+          <CardContent>
+            <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">
+                ${(contractBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+            </div>
             <p className={`text-sm font-medium ${dailyChange >= 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
                 {dailyChange >= 0 ? '+' : ''}{dailyChange.toFixed(2)}% (24h)
             </p>
@@ -526,13 +526,11 @@ export default function PortfolioDashboard() {
         </CardGlass>
         
         <CardGlass>
-          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-             <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
-              <User className="w-6 h-6 text-white" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-semibold">Your Vault Balance</CardTitle>
+            <User className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent>
              <div className="text-3xl md:text-4xl font-bold mb-1">
               {isConnected ? <><AnimatedNumber value={userBalanceNumber} /> ETH</> : '0.0000 ETH'}
             </div>
@@ -541,13 +539,11 @@ export default function PortfolioDashboard() {
         </CardGlass>
 
         <CardGlass>
-          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
-              <Landmark className="w-6 h-6 text-white" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-semibold">Total Vault Balance</CardTitle>
+            <Landmark className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent>
             <div className="text-3xl md:text-4xl font-bold mb-1">
               <AnimatedNumber value={contractBalanceNumber} /> ETH
             </div>
@@ -556,13 +552,11 @@ export default function PortfolioDashboard() {
         </CardGlass>
 
         <CardGlass>
-          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-accent to-primary rounded-xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-semibold">Yield Earned</CardTitle>
+            <TrendingUp className="h-6 w-6 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent>
             <p className="text-3xl md:text-4xl font-bold text-accent mb-1">5.2%</p>
             <p className="text-sm text-muted-foreground font-medium">Annual APY</p>
           </CardContent>
@@ -572,13 +566,13 @@ export default function PortfolioDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-10 md:mb-16">
         <div className="lg:col-span-3">
             <CardGlass className="h-full">
-                <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-chart-1 to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
-                        <LineChartIcon className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                        <LineChartIcon className="w-6 h-6 text-primary" />
+                        Vault Growth
+                    </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 h-80">
+                <CardContent className="pl-2 h-80">
                   {chartData.length > 1 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <ChartContainer config={lineChartConfig} className="w-full h-full">
@@ -629,13 +623,13 @@ export default function PortfolioDashboard() {
         </div>
         <div className="lg:col-span-2">
            <CardGlass className="h-full">
-            <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-chart-2 to-green-400 rounded-xl flex items-center justify-center shadow-lg">
-                <PieChartIcon className="w-6 h-6 text-white" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Your Activity</CardTitle>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                <PieChartIcon className="w-6 h-6 text-primary" />
+                Your Activity
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 h-80">
+            <CardContent className="flex items-center justify-center h-80">
               {userTxStats && (userTxStats.totalDeposits > 0 || userTxStats.totalWithdrawals > 0) ? (
                  <ResponsiveContainer width="100%" height="100%">
                   <ChartContainer config={pieChartConfig} className="w-full h-full">
@@ -682,13 +676,13 @@ export default function PortfolioDashboard() {
       {isOwner && (
         <div className="mb-10 md:mb-16">
             <CardGlass>
-                <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <Shield className="w-6 h-6 text-white" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold">Admin Panel</CardTitle>
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                        <Shield className="w-6 h-6 text-red-500" />
+                        Admin Panel
+                    </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent>
                     <p className="text-muted-foreground">Welcome, owner. Here you can manage the vault.</p>
                     {/* Admin features will go here */}
                 </CardContent>
@@ -698,13 +692,13 @@ export default function PortfolioDashboard() {
       
       {!isConnected ? (
         <CardGlass>
-          <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
-                  <Info className="w-6 h-6 text-white" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Getting Started</CardTitle>
+          <CardHeader>
+              <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                  <Info className="w-6 h-6 text-blue-500" />
+                  Getting Started
+              </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 space-y-4">
+          <CardContent className="space-y-4">
             <p className="text-muted-foreground">Welcome to the Base Portfolio Tracker! To get started, connect your wallet.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
@@ -867,6 +861,7 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
 
