@@ -563,7 +563,7 @@ export default function PortfolioDashboard() {
             <CardTitle className="text-xl font-semibold">Yield Earned</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <p className="text-3xl md:text-4xl font-bold text-accent animate-pulse mb-1">5.2%</p>
+            <p className="text-3xl md:text-4xl font-bold text-accent mb-1">5.2%</p>
             <p className="text-sm text-muted-foreground font-medium">Annual APY</p>
           </CardContent>
         </CardGlass>
@@ -867,6 +867,7 @@ export default function PortfolioDashboard() {
     
 
     
+
 
 
 
