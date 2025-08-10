@@ -130,15 +130,15 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
         
         {result ? (
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-            <Card>
+            <Card className="bg-transparent border-border/50">
               <CardHeader><CardTitle className="text-lg text-primary">Recommendations</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.recommendations}</p></CardContent>
             </Card>
-            <Card>
+            <Card className="bg-transparent border-border/50">
               <CardHeader><CardTitle className="text-lg text-primary">Risk Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.riskAnalysis}</p></CardContent>
             </Card>
-             <Card>
+             <Card className="bg-transparent border-border/50">
               <CardHeader><CardTitle className="text-lg text-primary">Return Analysis</CardTitle></CardHeader>
               <CardContent><p className="text-card-foreground/80">{result.returnAnalysis}</p></CardContent>
             </Card>
