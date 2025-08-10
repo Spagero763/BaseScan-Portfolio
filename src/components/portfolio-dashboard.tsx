@@ -438,11 +438,11 @@ export default function PortfolioDashboard() {
     
     const refetchPromises = [
         refetchContractBalance(),
-        refetchUserVaultBalance(),
         fetchVaultHistory(),
     ];
 
     if (isConnected) {
+        refetchPromises.push(refetchUserVaultBalance());
         refetchPromises.push(fetchUserTxStats());
     }
 
@@ -485,7 +485,7 @@ export default function PortfolioDashboard() {
     }
     const requestedAmount = parseEther(withdrawAmount);
 
-    if (userVaultBalanceData !== undefined && requestedAmount > userVaultBalanceData) {
+    if (userVaultBalanceData !== undefined && requestedAmount > (userVaultBalanceData as bigint)) {
         toast({
             variant: 'destructive',
             title: 'Insufficient Balance',
@@ -494,7 +494,7 @@ export default function PortfolioDashboard() {
         return;
     }
 
-    if (userVaultBalanceData !== undefined && requestedAmount === userVaultBalanceData && userWalletBalanceData?.value === 0n) {
+    if (userVaultBalanceData !== undefined && requestedAmount === (userVaultBalanceData as bigint) && userWalletBalanceData?.value === 0n) {
         toast({
             variant: 'destructive',
             title: 'Gas Fee Notice',
@@ -813,7 +813,7 @@ export default function PortfolioDashboard() {
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
-                  <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && !!withdrawAmount && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= userVaultBalanceData} />
+                  <GasFeeEstimator amount={withdrawAmount} type="withdraw" enabled={isConnected && !!withdrawAmount && userVaultBalanceData !== undefined && parseEther(withdrawAmount || '0') <= (userVaultBalanceData as bigint)} />
                 </div>
             </CardContent>
           </CardGlass>
