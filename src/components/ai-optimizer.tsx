@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { AiPortfolioOptimizerOutput } from '@/ai/flows/portfolio-optimizer';
@@ -129,18 +130,18 @@ export function AiOptimizer({ userBalanceInEth: propBalance }: { userBalanceInEt
         
         {result ? (
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-            <CardGlass>
+            <Card>
               <CardHeader><CardTitle className="text-lg text-primary">Recommendations</CardTitle></CardHeader>
-              <CardContent><p className="text-muted-foreground">{result.recommendations}</p></CardContent>
-            </CardGlass>
-            <CardGlass>
+              <CardContent><p className="text-card-foreground/80">{result.recommendations}</p></CardContent>
+            </Card>
+            <Card>
               <CardHeader><CardTitle className="text-lg text-primary">Risk Analysis</CardTitle></CardHeader>
-              <CardContent><p className="text-muted-foreground">{result.riskAnalysis}</p></CardContent>
-            </CardGlass>
-             <CardGlass>
+              <CardContent><p className="text-card-foreground/80">{result.riskAnalysis}</p></CardContent>
+            </Card>
+             <Card>
               <CardHeader><CardTitle className="text-lg text-primary">Return Analysis</CardTitle></CardHeader>
-              <CardContent><p className="text-muted-foreground">{result.returnAnalysis}</p></CardContent>
-            </CardGlass>
+              <CardContent><p className="text-card-foreground/80">{result.returnAnalysis}</p></CardContent>
+            </Card>
           </div>
         ) : (
           <Form {...form}>
