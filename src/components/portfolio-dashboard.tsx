@@ -135,7 +135,8 @@ export default function PortfolioDashboard() {
 
   useEffect(() => {
     // Simulate a dynamic daily change
-    setDailyChange((Math.random() - 0.5) * 15);
+    const randomChange = (Math.random() - 0.5) * 15;
+    setDailyChange(randomChange);
   }, []);
 
   const fetchUserTxStats = useCallback(async () => {
@@ -270,7 +271,7 @@ export default function PortfolioDashboard() {
   const lineChartConfig = {
     balance: {
       label: 'Vault Balance (ETH)',
-      color: 'hsl(var(--accent))',
+      color: 'hsl(var(--chart-1))',
     },
   } satisfies ChartConfig;
 
@@ -540,7 +541,7 @@ export default function PortfolioDashboard() {
         <div className="lg:col-span-3">
             <CardGlass className="h-full">
                 <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-gradient-to-br from-chart-1 to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
                         <LineChartIcon className="w-6 h-6 text-white" />
                     </div>
                     <CardTitle className="text-2xl font-bold">Vault Growth</CardTitle>
@@ -597,7 +598,7 @@ export default function PortfolioDashboard() {
         <div className="lg:col-span-2">
            <CardGlass className="h-full">
             <CardHeader className="flex-row items-center gap-4 p-0 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-400 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-chart-2 to-green-400 rounded-xl flex items-center justify-center shadow-lg">
                 <PieChartIcon className="w-6 h-6 text-white" />
               </div>
               <CardTitle className="text-2xl font-bold">Your Activity</CardTitle>
@@ -609,7 +610,12 @@ export default function PortfolioDashboard() {
                     <PieChart>
                       <ChartTooltip
                         cursor={false}
-                        content={<ChartTooltipContent hideLabel />}
+                        content={<ChartTooltipContent hideLabel formatter={(value, name) => (
+                            <div className="flex flex-col">
+                                <span className="capitalize text-muted-foreground">{name}</span>
+                                <span className="font-bold">{value.toFixed(4)} ETH</span>
+                            </div>
+                        )} />}
                       />
                       <Pie
                         data={pieChartData}
@@ -617,6 +623,7 @@ export default function PortfolioDashboard() {
                         nameKey="name"
                         innerRadius={60}
                         strokeWidth={5}
+                        paddingAngle={5}
                       >
                           <Cell key="cell-deposits" fill="var(--color-deposits)" />
                           <Cell key="cell-withdrawals" fill="var(--color-withdrawals)" />
