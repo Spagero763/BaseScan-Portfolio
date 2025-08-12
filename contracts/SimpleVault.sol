@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 contract SimpleVault {
     address public owner;
     mapping(address => uint256) public balances;
-
     event Deposit(address indexed user, uint256 amount);
     event Withdrawal(address indexed user, uint256 amount);
 
