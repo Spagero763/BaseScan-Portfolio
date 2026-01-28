@@ -719,17 +719,26 @@ export default function PortfolioDashboard() {
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">Welcome to the Base Portfolio Tracker! To get started, connect your wallet.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
-                    <h3 className="font-bold text-lg mb-2">1. Connect Your Wallet</h3>
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4 hover:bg-muted/70 dark:hover:bg-white/10 transition-colors">
+                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-lg font-bold">1</span>
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">Connect Your Wallet</h3>
                     <p className="text-sm text-muted-foreground/70">Click the "Connect Wallet" button in the top right to get started.</p>
                 </div>
-                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
-                    <h3 className="font-bold text-lg mb-2">2. Deposit ETH</h3>
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4 hover:bg-muted/70 dark:hover:bg-white/10 transition-colors">
+                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-lg font-bold">2</span>
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">Deposit ETH</h3>
                     <p className="text-sm text-muted-foreground/70">Once connected, you can deposit ETH into the vault to start earning yield.</p>
                 </div>
-                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4">
-                    <h3 className="font-bold text-lg mb-2">3. Track Your Portfolio</h3>
-                    <p className="text-sm text-muted-foreground/70">Your balances and transaction history will appear here once you'veve made a deposit.</p>
+                <div className="bg-muted/50 dark:bg-white/5 rounded-lg p-4 hover:bg-muted/70 dark:hover:bg-white/10 transition-colors">
+                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-lg font-bold">3</span>
+                    </div>
+                    <h3 className="font-bold text-lg mb-2">Track Your Portfolio</h3>
+                    <p className="text-sm text-muted-foreground/70">Your balances and transaction history will appear here once you've made a deposit.</p>
                 </div>
             </div>
           </CardContent>
