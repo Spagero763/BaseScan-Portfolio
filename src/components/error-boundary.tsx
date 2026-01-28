@@ -1,8 +1,9 @@
 'use client';
 
-import { AlertTriangle, WifiOff } from 'lucide-react';
+import { AlertTriangle, WifiOff, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { useNetworkStatus } from '@/hooks/use-network-status';
+import { Button } from './ui/button';
 
 export function NetworkStatusBanner() {
   const { isOffline } = useNetworkStatus();
@@ -42,5 +43,76 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorBoundaryFallba
         </button>
       )}
     </div>
+  );
+}
+
+/**
+ * Parse and format blockchain transaction errors into user-friendly messages
+ */
+export function parseTransactionError(error: unknown): string {
+  if (!error) return 'Transaction failed';
+  
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  
+  // User rejection
+  if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
+    return 'Transaction was cancelled';
+  }
+  
+  // Insufficient funds
+  if (errorMessage.includes('insufficient funds') || errorMessage.includes('InsufficientFunds')) {
+    return 'Insufficient ETH balance for this transaction';
+  }
+  
+  // Gas estimation failed
+  if (errorMessage.includes('gas required exceeds') || errorMessage.includes('out of gas')) {
+    return 'Transaction would fail - check your balance and try a smaller amount';
+  }
+  
+  // Network issues
+  if (errorMessage.includes('network') || errorMessage.includes('timeout') || errorMessage.includes('ECONNREFUSED')) {
+    return 'Network error - please check your connection and try again';
+  }
+  
+  // Contract revert
+  if (errorMessage.includes('revert') || errorMessage.includes('execution reverted')) {
+    const revertMatch = errorMessage.match(/reason="([^"]+)"/);
+    if (revertMatch) {
+      return `Contract error: ${revertMatch[1]}`;
+    }
+    return 'Transaction would fail - contract rejected the operation';
+  }
+  
+  // Nonce issues
+  if (errorMessage.includes('nonce')) {
+    return 'Transaction nonce error - please refresh and try again';
+  }
+  
+  // Default: return first line of error
+  return errorMessage.split('\n')[0].slice(0, 100);
+}
+
+interface TransactionErrorProps {
+  error: unknown;
+  onRetry?: () => void;
+}
+
+export function TransactionError({ error, onRetry }: TransactionErrorProps) {
+  const message = parseTransactionError(error);
+  
+  return (
+    <Alert variant="destructive" className="mt-4">
+      <AlertTriangle className="h-4 w-4" />
+      <AlertTitle>Transaction Failed</AlertTitle>
+      <AlertDescription className="flex items-center justify-between">
+        <span>{message}</span>
+        {onRetry && (
+          <Button variant="outline" size="sm" onClick={onRetry} className="ml-4">
+            <RefreshCw className="h-3 w-3 mr-1" />
+            Retry
+          </Button>
+        )}
+      </AlertDescription>
+    </Alert>
   );
 }
