@@ -4,7 +4,7 @@
 import { simpleVaultAbi } from '@/lib/abi';
 import { formatEther } from 'viem';
 import { usePublicClient } from 'wagmi';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, ScrollText, Clock } from 'lucide-react';
@@ -31,10 +31,13 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
     const publicClient = usePublicClient();
+    const fetchIdRef = useRef(0);
+    const isMountedRef = useRef(true);
 
     const fetchHistory = useCallback(async () => {
         if (!userAddress || !publicClient) return;
 
+        const currentFetchId = ++fetchIdRef.current;
         setLoading(true);
 
         try {
@@ -64,8 +67,14 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                 fromBlock: 'earliest',
             });
 
+            // Check if this fetch is still relevant
+            if (currentFetchId !== fetchIdRef.current || !isMountedRef.current) return;
+
             const depositLogs = await publicClient.getFilterLogs({ filter: depositFilter });
             const withdrawalLogs = await publicClient.getFilterLogs({ filter: withdrawalFilter });
+
+            // Another stale check after async operations
+            if (currentFetchId !== fetchIdRef.current || !isMountedRef.current) return;
 
             // Fetch block timestamps for all logs
             const allLogs = [...depositLogs, ...withdrawalLogs];
@@ -73,6 +82,9 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
             const blocks = await Promise.all(
                 uniqueBlockNumbers.map(blockNum => publicClient.getBlock({ blockNumber: blockNum }))
             );
+            
+            if (currentFetchId !== fetchIdRef.current || !isMountedRef.current) return;
+            
             const blockTimestamps = new Map(blocks.map(block => [block.number, Number(block.timestamp) * 1000]));
 
             const deposits: Transaction[] = depositLogs.map(log => ({
@@ -93,16 +105,26 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
 
             const combined = [...deposits, ...withdrawals].sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber));
 
-            setTransactions(combined);
+            // Final stale check before updating state
+            if (currentFetchId === fetchIdRef.current && isMountedRef.current) {
+                setTransactions(combined);
+            }
         } catch (error) {
             console.error("Failed to fetch transaction history:", error);
         } finally {
-            setLoading(false);
+            if (currentFetchId === fetchIdRef.current && isMountedRef.current) {
+                setLoading(false);
+            }
         }
     }, [userAddress, publicClient, contractAddress]);
 
     useEffect(() => {
+        isMountedRef.current = true;
         fetchHistory();
+        
+        return () => {
+            isMountedRef.current = false;
+        };
     }, [fetchHistory, triggerRefetch]);
 
 
