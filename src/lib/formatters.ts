@@ -21,17 +21,76 @@ export function formatEthToUsd(ethAmount: number, price: number = ETH_MOCK_PRICE
 }
 
 /**
+ * Sanitize and validate ETH input string
+ * Returns cleaned string with only valid numeric characters
+ */
+export function sanitizeEthInput(value: string): string {
+  // Remove any non-numeric characters except decimal point
+  let sanitized = value.replace(/[^0-9.]/g, '');
+  
+  // Ensure only one decimal point
+  const parts = sanitized.split('.');
+  if (parts.length > 2) {
+    sanitized = parts[0] + '.' + parts.slice(1).join('');
+  }
+  
+  // Limit decimal places to 18 (ETH precision)
+  if (parts.length === 2 && parts[1].length > 18) {
+    sanitized = parts[0] + '.' + parts[1].slice(0, 18);
+  }
+  
+  // Prevent leading zeros (except for "0.")
+  if (sanitized.length > 1 && sanitized[0] === '0' && sanitized[1] !== '.') {
+    sanitized = sanitized.replace(/^0+/, '') || '0';
+  }
+  
+  return sanitized;
+}
+
+/**
  * Safely parse ETH input string to bigint
  */
 export function safeParseEther(value: string): bigint | null {
   try {
-    if (!value || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
+    const sanitized = sanitizeEthInput(value);
+    if (!sanitized || isNaN(parseFloat(sanitized)) || parseFloat(sanitized) <= 0) {
       return null;
     }
-    return parseEther(value);
+    return parseEther(sanitized);
   } catch {
     return null;
   }
+}
+
+/**
+ * Validate ETH amount against balance
+ */
+export function validateAmount(amount: string, balance: bigint, minAmount: number = 0): { valid: boolean; error?: string } {
+  const sanitized = sanitizeEthInput(amount);
+  
+  if (!sanitized || sanitized === '0') {
+    return { valid: false, error: 'Please enter an amount' };
+  }
+  
+  const numAmount = parseFloat(sanitized);
+  if (isNaN(numAmount)) {
+    return { valid: false, error: 'Invalid amount format' };
+  }
+  
+  if (numAmount < minAmount) {
+    return { valid: false, error: `Minimum amount is ${minAmount} ETH` };
+  }
+  
+  try {
+    const amountWei = parseEther(sanitized);
+    if (amountWei > balance) {
+      return { valid: false, error: 'Insufficient balance' };
+    }
+  } catch {
+    return { valid: false, error: 'Invalid amount' };
+  }
+  
+  return { valid: true };
 }
 
 /**
