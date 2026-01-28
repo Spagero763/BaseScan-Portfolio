@@ -14,7 +14,17 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-domain.vercel.ap
 export const metadata: Metadata = {
   title: "BaseScan Portfolio",
   description: "Track your Base network portfolio performance in real-time",
+  keywords: ["Base", "Ethereum", "Portfolio", "DeFi", "Web3", "Cryptocurrency"],
+  authors: [{ name: "BaseScan Portfolio Team" }],
   openGraph: {
+    title: "BaseScan Portfolio",
+    description: "Track your Base network portfolio performance in real-time",
+    images: [`${appUrl}/portfolio-preview.png`],
+    type: "website",
+    siteName: "BaseScan Portfolio",
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "BaseScan Portfolio",
     description: "Track your Base network portfolio performance in real-time",
     images: [`${appUrl}/portfolio-preview.png`],
