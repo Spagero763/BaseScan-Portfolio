@@ -7,15 +7,18 @@ import { usePublicClient } from 'wagmi';
 import { useEffect, useState, useCallback } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, ScrollText } from 'lucide-react';
+import { ExternalLink, ScrollText, Clock } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { CardHeader, CardContent, CardTitle } from './ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Transaction {
     hash: string;
     type: 'Deposit' | 'Withdrawal';
     amount: string;
     blockNumber: bigint;
+    timestamp?: number;
 }
 
 interface TransactionHistoryProps {
@@ -64,11 +67,20 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
             const depositLogs = await publicClient.getFilterLogs({ filter: depositFilter });
             const withdrawalLogs = await publicClient.getFilterLogs({ filter: withdrawalFilter });
 
+            // Fetch block timestamps for all logs
+            const allLogs = [...depositLogs, ...withdrawalLogs];
+            const uniqueBlockNumbers = [...new Set(allLogs.map(log => log.blockNumber))];
+            const blocks = await Promise.all(
+                uniqueBlockNumbers.map(blockNum => publicClient.getBlock({ blockNumber: blockNum }))
+            );
+            const blockTimestamps = new Map(blocks.map(block => [block.number, Number(block.timestamp) * 1000]));
+
             const deposits: Transaction[] = depositLogs.map(log => ({
                 hash: log.transactionHash,
                 type: 'Deposit',
                 amount: formatEther((log.args as any).amount),
                 blockNumber: log.blockNumber,
+                timestamp: blockTimestamps.get(log.blockNumber),
             }));
 
             const withdrawals: Transaction[] = withdrawalLogs.map(log => ({
@@ -76,6 +88,7 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                 type: 'Withdrawal',
                 amount: formatEther((log.args as any).amount),
                 blockNumber: log.blockNumber,
+                timestamp: blockTimestamps.get(log.blockNumber),
             }));
 
             const combined = [...deposits, ...withdrawals].sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber));
@@ -111,6 +124,7 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Type</TableHead>
+                                    <TableHead>Time</TableHead>
                                     <TableHead className="text-right">Amount</TableHead>
                                     <TableHead className="text-right">Tx</TableHead>
                                 </TableRow>
@@ -122,6 +136,21 @@ export function TransactionHistory({ contractAddress, userAddress, triggerRefetc
                                             <Badge variant={tx.type === 'Deposit' ? 'default' : 'secondary'} className={tx.type === 'Deposit' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-red-500/20 text-red-300 border-red-500/30'}>
                                                 {tx.type}
                                             </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground text-sm">
+                                            {tx.timestamp ? (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger className="flex items-center gap-1">
+                                                            <Clock className="w-3 h-3" />
+                                                            {formatDistanceToNow(new Date(tx.timestamp), { addSuffix: true })}
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            {new Date(tx.timestamp).toLocaleString()}
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            ) : '-'}
                                         </TableCell>
                                         <TableCell className="text-right font-mono">{parseFloat(tx.amount).toFixed(4)} ETH</TableCell>
                                         <TableCell className="text-right">
