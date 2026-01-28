@@ -534,9 +534,12 @@ export default function PortfolioDashboard() {
             <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-accent to-foreground dark:to-white mb-1">
                 ${(contractBalanceNumber * ETH_MOCK_PRICE).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
             </div>
-            <p className={`text-sm font-medium ${dailyChange >= 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
-                {dailyChange >= 0 ? '+' : ''}{dailyChange.toFixed(2)}% (24h)
-            </p>
+            <div className="flex items-center gap-2">
+              <p className={`text-sm font-medium ${dailyChange >= 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                  {dailyChange >= 0 ? '↑' : '↓'} {Math.abs(dailyChange).toFixed(2)}% (24h)
+              </p>
+              <span className="text-xs text-muted-foreground">vs yesterday</span>
+            </div>
           </CardContent>
         </CardGlass>
         
