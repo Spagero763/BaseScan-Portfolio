@@ -10,9 +10,20 @@ function easeOutExpo(t: number) {
 interface AnimatedNumberProps extends React.HTMLAttributes<HTMLSpanElement> {
   value: number;
   decimals?: number;
+  prefix?: string;
+  suffix?: string;
+  formatOptions?: Intl.NumberFormatOptions;
 }
 
-export function AnimatedNumber({ value, decimals = 4, className, ...rest }: AnimatedNumberProps) {
+export function AnimatedNumber({ 
+  value, 
+  decimals = 4, 
+  prefix = '',
+  suffix = '',
+  formatOptions,
+  className, 
+  ...rest 
+}: AnimatedNumberProps) {
   const [displayValue, setDisplayValue] = useState(value);
   const prevValueRef = useRef(value);
   const animationRef = useRef<number>();
@@ -49,9 +60,16 @@ export function AnimatedNumber({ value, decimals = 4, className, ...rest }: Anim
     };
   }, [value]);
 
+  const formatValue = (num: number): string => {
+    if (formatOptions) {
+      return new Intl.NumberFormat('en-US', formatOptions).format(num);
+    }
+    return num.toFixed(decimals);
+  };
+
   return (
     <span className={className} {...rest}>
-      {displayValue.toFixed(decimals)}
+      {prefix}{formatValue(displayValue)}{suffix}
     </span>
   );
 }
