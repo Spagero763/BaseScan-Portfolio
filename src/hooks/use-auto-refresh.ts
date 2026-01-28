@@ -12,20 +12,35 @@ export function useAutoRefresh({ interval, enabled = true, onRefresh }: UseAutoR
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
+  const onRefreshRef = useRef(onRefresh);
+
+  // Keep callback ref updated without triggering effect re-runs
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
 
   const refresh = useCallback(async () => {
-    if (isRefreshing) return;
+    if (isRefreshing || !isMountedRef.current) return;
     
     setIsRefreshing(true);
     try {
-      await onRefresh();
-      setLastRefreshed(new Date());
+      await onRefreshRef.current();
+      if (isMountedRef.current) {
+        setLastRefreshed(new Date());
+      }
+    } catch (error) {
+      console.error('Auto refresh failed:', error);
     } finally {
-      setIsRefreshing(false);
+      if (isMountedRef.current) {
+        setIsRefreshing(false);
+      }
     }
-  }, [isRefreshing, onRefresh]);
+  }, [isRefreshing]);
 
   useEffect(() => {
+    isMountedRef.current = true;
+    
     if (!enabled) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -34,9 +49,15 @@ export function useAutoRefresh({ interval, enabled = true, onRefresh }: UseAutoR
       return;
     }
 
+    // Clear any existing interval before setting a new one
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
     intervalRef.current = setInterval(refresh, interval);
 
     return () => {
+      isMountedRef.current = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
