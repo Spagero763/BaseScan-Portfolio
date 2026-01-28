@@ -6,8 +6,17 @@
 - Vault Details: Show contract address, status, total locked, and share ratio for the vault.
 - View on BaseScan: Enable users to view contract on BaseScan via provided url.
 - Share on Farcaster: Allow users to share their portfolio performance with a pre-filled message copied to the clipboard.
-- Refresh Data: Refresh the portfolio data to reflect the latest information (this may just be a dummy button for the MVP).
-- AI-Powered Portfolio Optimizer: Provide personalized recommendations for optimizing the portfolio based on current holdings and market trends, using a tool for analyzing risk and return.
+- Refresh Data: Refresh the portfolio data to reflect the latest information with auto-refresh support.
+- Transaction History: View detailed transaction history with timestamps and relative time display.
+- Network Status: Display offline banner when network connection is lost.
+
+## Technical Utilities:
+
+- Constants Configuration: Centralized configuration for contract addresses, prices, and UI settings.
+- Formatters: Utility functions for ETH/USD formatting, address truncation, and number display.
+- Custom Hooks: useAutoRefresh, useCopyToClipboard, useNetworkStatus, useLocalStorage, useDebounce, useMediaQuery.
+- Validation Schemas: Zod schemas for deposits, withdrawals, and address validation.
+- Loading States: Reusable spinner, overlay, and skeleton components.
 
 ## Style Guidelines:
 
@@ -18,3 +27,5 @@
 - Use clean, geometric icons to represent different assets and actions, in a bright style.
 - Emphasize a card-based layout for key metrics, creating a modular, easy-to-read design.
 - Subtle animations when data is refreshed, and for interactive elements.
+- Custom scrollbar styling and glassmorphism effects for modern UI feel.
+- Gradient text utilities for highlighted content.
